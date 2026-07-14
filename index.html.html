@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" id="theme-color-meta" content="#4A0B0E">
+    <title>Kuis Singapraja - BEM UNSIKA 2026</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 'sans': ['Poppins', 'sans-serif'], 'display': ['Fredoka One', 'cursive'] },
+                    colors: { 'bem-red': '#8A151B', 'bem-dark': '#4A0B0E', 'bem-yellow': '#F9D423', 'correct': '#22c55e', 'wrong': '#ef4444' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root, [data-theme="maroon"] { --theme-bg: #4A0B0E; --theme-light: rgba(138, 21, 27, 0.95); --accent: #F9D423; }
+        [data-theme="pink"] { --theme-bg: #C70068; --theme-light: rgba(255, 82, 175, 0.95); --accent: #F9D423; }
+        [data-theme="merah-terang"] { --theme-bg: #8A0004; --theme-light: rgba(255, 46, 53, 0.95); --accent: #FFD700; }
+        [data-theme="system"] { --theme-bg: #1f2937; --theme-light: #374151; --accent: #F9D423; }
+
+        body { background-color: var(--theme-bg); color: #ffffff; min-height: 100dvh; transition: background-color 0.5s; overflow-x: hidden; }
+        #dynamic-bg { background-image: linear-gradient(135deg, var(--theme-light) 0%, transparent 80%); transition: all 0.8s; }
+        
+        .glass-panel { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+        .glass-nav { background: rgba(0,0,0,0.25); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+        .glass-input { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: white; transition: all 0.3s ease; }
+        .glass-input:focus { background: rgba(0, 0, 0, 0.4); border-color: var(--accent); outline: none; box-shadow: 0 0 15px rgba(249, 212, 35, 0.3); }
+        .glass-input option { background-color: var(--theme-bg); color: white; }
+        
+        .mascot-img { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease; object-fit: contain; transform-origin: bottom center; }
+        .mascot-happy { transform: scale(1.15) translateY(-5px); filter: drop-shadow(0 0 20px rgba(249,212,35,0.6)); }
+        .mascot-sad { transform: scale(0.95) translateY(5px); filter: grayscale(0.2) drop-shadow(0 0 10px rgba(0,0,0,0.3)); }
+        
+        .btn-option { position: relative; overflow: hidden; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-option:active { transform: scale(0.95); }
+        .correct-answer { background-color: rgba(34, 197, 94, 0.9) !important; border-color: #22c55e !important; box-shadow: 0 0 20px rgba(34,197,94,0.5); }
+        .wrong-answer { background-color: rgba(239, 68, 68, 0.9) !important; border-color: #ef4444 !important; box-shadow: 0 0 20px rgba(239,68,68,0.5); }
+        .disabled { opacity: 0.7; pointer-events: none; }
+        
+        .screen { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .screen.active { display: flex; opacity: 1; }
+        
+        .shake-screen { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(3px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
+        
+        .text-glow { text-shadow: 0 0 10px var(--accent), 0 0 20px rgba(249, 212, 35, 0.4); }
+
+        .lb-scroll::-webkit-scrollbar { width: 6px; }
+        .lb-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
+        .lb-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+    </style>
+</head>
+<body class="relative flex flex-col font-sans">
+
+    <div id="dynamic-bg" class="fixed inset-0 -z-20 w-full h-full"></div>
+    <div class="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,212,35,0.08)_0%,transparent_60%)] pointer-events-none -z-10"></div>
+
+    <nav class="fixed w-full top-0 z-50 glass-nav">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-graduation-cap text-2xl md:text-3xl text-bem-yellow drop-shadow-md"></i>
+                <h1 class="font-display text-lg md:text-xl tracking-wide hidden md:block text-glow" data-i18n="nav_title">Kuis Singapraja</h1>
+            </div>
+            <div class="flex gap-2">
+                <div class="relative group">
+                    <button class="glass-panel px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 hover:bg-white/20 transition-colors">
+                        <i class="fas fa-palette"></i> <span class="hidden md:inline">TEMA</span>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-44 glass-panel rounded-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 shadow-2xl transform origin-top-right scale-95 group-hover:scale-100">
+                        <button onclick="changeTheme('maroon')" class="w-full text-left p-2 rounded-lg hover:bg-white/20 text-xs mb-1 font-semibold">BUMM UNSIKA <span class="float-right text-[#4A0B0E]">●</span></button>
+                        <button onclick="changeTheme('pink')" class="w-full text-left p-2 rounded-lg hover:bg-white/20 text-xs mb-1 font-semibold">BEM UNSIKA <span class="float-right text-[#C70068]">●</span></button>
+                        <button onclick="changeTheme('merah-terang')" class="w-full text-left p-2 rounded-lg hover:bg-white/20 text-xs mb-1 font-semibold">PKKMB 2026 <span class="float-right text-[#8A0004]">●</span></button>
+                        <div class="border-t border-white/20 my-1"></div>
+                        <button onclick="changeTheme('system')" class="w-full text-left p-2 rounded-lg hover:bg-white/20 text-xs font-semibold">Auto (Sistem) <i class="fas fa-desktop float-right opacity-50"></i></button>
+                    </div>
+                </div>
+                <div class="relative group">
+                    <button class="glass-panel px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 hover:bg-white/20 transition-colors">
+                        <i class="fas fa-globe"></i> <span id="lang-display">ID</span>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-32 glass-panel rounded-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 shadow-2xl transform origin-top-right scale-95 group-hover:scale-100">
+                        <button onclick="changeLang('id')" class="w-full text-left p-2 rounded-lg hover:bg-white/20 text-xs font-bold mb-1">🇮🇩 Indonesia</button>
+                        <button onclick="changeLang('en')" class="w-full text-left p-2 rounded-lg hover:bg-white/20 text-xs font-bold mb-1">🇬🇧 English</button>
+                        <button onclick="changeLang('su')" class="w-full text-left p-2 rounded-lg hover:bg-white/20 text-xs font-bold">ᮞᮥ Sunda</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex flex-col items-center justify-center pt-24 pb-12 px-4 w-full">
+        
+        <!-- SCREEN 0: REGISTRASI -->
+        <div id="screen-register" class="screen active flex-col items-center text-center max-w-md w-full z-10" style="display: flex;">
+            <div class="glass-panel p-8 md:p-10 rounded-[2rem] w-full flex flex-col items-center shadow-2xl border-t-white/30 relative mt-16 md:mt-10">
+                <img src="https://i.ibb.co.com/h5fJJQf/Mengumumkan.webp" class="w-32 mascot-img -mt-24 drop-shadow-xl mb-4">
+                <h1 class="text-3xl font-display text-bem-yellow text-glow mb-2" data-i18n="reg_title">Data Pemain</h1>
+                <p class="text-sm text-white/80 mb-4" data-i18n="reg_sub">Masukkan nama dan asal fakultasmu untuk masuk ke Leaderboard!</p>
+                
+                <p id="reg-error" class="text-bem-yellow bg-red-600/50 py-2 px-4 rounded-xl text-sm font-bold mb-4 hidden animate-pulse w-full"></p>
+
+                <div class="w-full text-left mb-4">
+                    <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider" data-i18n="reg_name">NAMA PANGGILAN</label>
+                    <input type="text" id="player-name" placeholder="Cth: Rahmat" class="glass-input w-full px-4 py-3 rounded-xl font-medium" maxlength="15" autocomplete="off">
+                </div>
+                
+                <div class="w-full text-left mb-8">
+                    <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider" data-i18n="reg_faculty">FAKULTAS</label>
+                    <select id="player-faculty" class="glass-input w-full px-4 py-3 rounded-xl font-medium appearance-none">
+                        <option value="" disabled selected data-i18n="reg_faculty_ph">-- Pilih Fakultas --</option>
+                        <option value="Hukum (FH)">Hukum (FH)</option>
+                        <option value="Ekonomi dan Bisnis (FEB)">Ekonomi dan Bisnis (FEB)</option>
+                        <option value="Keguruan & Ilmu Pendidikan (FKIP)">Keguruan & Ilmu Pendidikan (FKIP)</option>
+                        <option value="Pertanian (FAPERTA)">Pertanian (FAPERTA)</option>
+                        <option value="Teknik (FT)">Teknik (FT)</option>
+                        <option value="Ilmu Komputer (FASILKOM)">Ilmu Komputer (FASILKOM)</option>
+                        <option value="Ilmu Sosial & Ilmu Politik (FISIP)">Ilmu Sosial & Ilmu Politik (FISIP)</option>
+                        <option value="Agama Islam (FAI)">Agama Islam (FAI)</option>
+                        <option value="Ilmu Kesehatan (FIKES)">Ilmu Kesehatan (FIKES)</option>
+                        <option value="Lainnya/Tamu">Lainnya / Tamu</option>
+                    </select>
+                </div>
+                
+                <button onclick="submitRegister()" class="w-full py-4 bg-bem-yellow hover:bg-yellow-400 text-bem-dark rounded-xl transition-all font-bold text-lg tracking-widest uppercase z-10 shadow-[0_0_20px_rgba(249,212,35,0.4)]">
+                    <span data-i18n="btn_next">LANJUT</span> <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 1: LOBBY -->
+        <div id="screen-lobby" class="screen flex-col items-center text-center max-w-2xl w-full z-10">
+            <div class="flex justify-center items-end mb-4 gap-2 md:gap-6 relative">
+                <img src="https://i.ibb.co.com/1YqY20gX/Siska-Senang-ceria-Melompat-Confetti.webp" class="w-36 md:w-48 mascot-img drop-shadow-xl z-10 hover:scale-110">
+                <img src="https://i.ibb.co.com/Y4BdvqJ9/Pandu-Senang-ceria-Melompat-Confetti.webp" class="w-36 md:w-48 mascot-img drop-shadow-xl z-0 hover:scale-110">
+            </div>
+            
+            <h2 id="greeting-text" class="text-xl md:text-2xl font-semibold mb-2 text-white/90">Halo!</h2>
+            <h1 class="text-4xl md:text-6xl font-display text-bem-yellow text-glow mb-4 leading-tight" data-i18n="lobby_title">Singapraja Kuis</h1>
+            <p class="text-sm md:text-lg text-white/90 mb-10 max-w-md font-medium" data-i18n="lobby_sub">Uji wawasanmu tentang kampus tercinta UNSIKA di 3 Level!</p>
+            
+            <button onclick="startQuiz()" class="group relative px-10 py-4 bg-bem-yellow text-bem-dark rounded-full font-display tracking-widest text-lg md:text-xl shadow-[0_0_30px_rgba(249,212,35,0.4)] transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(249,212,35,0.7)]">
+                <span data-i18n="btn_start">MULAI MAIN</span>
+                <i class="fas fa-play ml-2 group-hover:translate-x-1 transition-transform"></i>
+            </button>
+            
+            <button onclick="viewLeaderboard()" class="mt-6 text-sm font-bold text-white/70 hover:text-white underline decoration-dashed underline-offset-4 tracking-wider"><i class="fas fa-trophy mr-1 text-bem-yellow"></i> <span data-i18n="btn_view_lb">Lihat Papan Peringkat</span></button>
+        </div>
+
+        <!-- SCREEN 2: GAMEPLAY -->
+        <div id="screen-game" class="screen flex-col items-center w-full max-w-4xl hidden z-10">
+            <div class="w-full flex justify-between items-center mb-6 glass-panel px-5 py-3 rounded-2xl shadow-lg mt-6">
+                <div class="font-bold flex items-center gap-4">
+                    <span id="level-ui" class="bg-white/20 px-3 py-1 rounded-lg text-xs md:text-sm tracking-wider uppercase">Level 1</span>
+                    <span id="streak-ui" class="text-bem-yellow text-glow text-sm md:text-base"><i class="fas fa-fire text-orange-400"></i> Combo: 0</span>
+                </div>
+                <div class="text-xs md:text-sm font-semibold opacity-90 tracking-wider">
+                    <span data-i18n="q_counter">Soal</span> <span id="q-counter-ui" class="ml-1 text-bem-yellow">1/30</span>
+                </div>
+            </div>
+
+            <div class="w-full h-3 md:h-4 bg-black/40 rounded-full mb-8 overflow-hidden border border-white/10 shadow-inner relative">
+                <div id="timer-bar" class="absolute top-0 left-0 h-full bg-bem-yellow rounded-full transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(249,212,35,0.8)]"></div>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 w-full mb-8">
+                <div class="hidden md:flex w-1/4 justify-center">
+                    <img id="mascot-siska" src="" class="w-32 lg:w-40 mascot-img drop-shadow-2xl">
+                </div>
+                <div class="glass-panel p-6 md:p-10 rounded-3xl w-full md:w-2/3 text-center relative overflow-hidden min-h-[160px] flex items-center justify-center shadow-xl border-t-white/30 border-l-white/30">
+                    <h2 id="question-text" class="text-lg md:text-xl font-semibold leading-relaxed z-10 drop-shadow-md">Memuat pertanyaan...</h2>
+                    <div id="feedback-overlay" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 z-20 backdrop-blur-sm pointer-events-none">
+                        <h3 id="feedback-text" class="text-4xl md:text-5xl font-display font-bold transform scale-90 transition-transform duration-300 text-center px-4"></h3>
+                    </div>
+                </div>
+                <div class="hidden md:flex w-1/4 justify-center">
+                    <img id="mascot-pandu" src="" class="w-32 lg:w-40 mascot-img drop-shadow-2xl">
+                </div>
+            </div>
+
+            <div class="flex md:hidden justify-center gap-10 mb-6 w-full">
+                <img id="mascot-siska-mob" src="" class="w-24 mascot-img drop-shadow-xl">
+                <img id="mascot-pandu-mob" src="" class="w-24 mascot-img drop-shadow-xl">
+            </div>
+
+            <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 w-full px-2 md:px-0"></div>
+        </div>
+
+        <!-- SCREEN 3: LEVEL RESULT -->
+        <div id="screen-level" class="screen flex-col items-center w-full max-w-xl text-center hidden z-10">
+            <h1 id="level-title-ui" class="text-4xl md:text-5xl font-display text-bem-yellow text-glow mb-4 tracking-wide">LEVEL SELESAI</h1>
+            <p class="text-sm md:text-lg text-white/90 mb-8" data-i18n="lvl_sub">Kerja bagus! Persiapkan dirimu untuk tantangan selanjutnya.</p>
+            
+            <div class="glass-panel p-8 md:p-12 rounded-[2.5rem] w-full flex flex-col items-center shadow-2xl relative overflow-hidden border-t-white/30 mb-6">
+                <div class="flex justify-center items-end gap-4 mb-6 z-10 relative">
+                    <img src="https://i.ibb.co.com/h5fJJQf/Mengumumkan.webp" class="w-28 md:w-36 mascot-img drop-shadow-xl">
+                </div>
+                <p class="text-sm md:text-base font-semibold text-white/80 uppercase tracking-widest mb-2 z-10" data-i18n="lvl_score">Skor Level Ini</p>
+                <div class="text-6xl md:text-7xl font-display text-white mb-4 text-glow z-10" id="level-score">0</div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 w-full">
+                <button onclick="abortQuiz()" class="flex-1 py-4 bg-white/10 hover:bg-white/20 rounded-2xl border border-white/20 transition-all font-bold text-sm tracking-widest uppercase z-10 shadow-lg" data-i18n="btn_home">Beranda</button>
+                <button onclick="nextLevel()" class="flex-1 py-4 bg-bem-yellow hover:bg-yellow-400 text-bem-dark rounded-2xl transition-all font-bold text-sm tracking-widest uppercase z-10 shadow-lg" data-i18n="btn_next_lvl">Lanjut Level</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: FINAL RESULT -->
+        <div id="screen-result" class="screen flex-col items-center w-full max-w-xl text-center hidden z-10">
+            <h1 class="text-4xl md:text-5xl font-display text-bem-yellow text-glow mb-8 tracking-wide" data-i18n="res_title">HASIL AKHIR</h1>
+            <div class="glass-panel p-8 md:p-12 rounded-[2.5rem] w-full flex flex-col items-center shadow-2xl relative overflow-hidden border-t-white/30">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(249,212,35,0.15)_0%,transparent_60%)] pointer-events-none"></div>
+                <div class="flex justify-center items-end gap-4 mb-6 z-10 relative">
+                    <img src="https://i.ibb.co.com/TxtXxfZ2/siska-Bangga-percaya-diri.webp" class="w-28 md:w-36 mascot-img drop-shadow-xl">
+                    <i class="fas fa-trophy text-5xl text-bem-yellow drop-shadow-[0_0_15px_rgba(249,212,35,0.8)] pb-4"></i>
+                    <img src="https://i.ibb.co.com/gMHHJSGK/padnu-Bangga-percaya-diri.webp" class="w-28 md:w-36 mascot-img drop-shadow-xl">
+                </div>
+                <p class="text-sm md:text-base font-semibold text-white/80 uppercase tracking-widest mb-2 z-10" data-i18n="res_score">Total Skor (Semua Level)</p>
+                <div class="text-6xl md:text-8xl font-display text-white mb-8 text-glow z-10" id="final-score">0</div>
+                
+                <div id="saving-state" class="w-full flex justify-center items-center py-2 mb-4 hidden">
+                    <i class="fas fa-circle-notch fa-spin text-bem-yellow text-xl mr-2"></i>
+                    <span class="text-sm text-white/80" data-i18n="txt_saving">Menyimpan skor...</span>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-3 w-full z-10">
+                    <button onclick="resetToLobby()" class="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-xl border border-white/20 transition-all font-bold text-sm tracking-widest uppercase shadow-lg">
+                        <i class="fas fa-home mr-1"></i> <span data-i18n="btn_home">Beranda</span>
+                    </button>
+                    <button onclick="saveAndShowLeaderboard()" class="flex-[2] py-3 bg-bem-yellow hover:bg-yellow-400 text-bem-dark rounded-xl transition-all font-bold text-sm tracking-widest uppercase shadow-lg group">
+                        <i class="fas fa-list-ol mr-1"></i> <span data-i18n="btn_save_lb">Lihat Leaderboard</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: LEADERBOARD -->
+        <div id="screen-leaderboard" class="screen flex-col items-center w-full max-w-2xl text-center hidden z-10">
+            <h1 class="text-3xl md:text-5xl font-display text-bem-yellow text-glow mb-2 tracking-wide" data-i18n="lb_title">Papan Peringkat</h1>
+            <p class="text-sm text-white/80 mb-6" data-i18n="lb_sub">Top 10 Pemain dengan Skor Tertinggi!</p>
+            
+            <div class="glass-panel p-4 md:p-6 rounded-[2rem] w-full flex flex-col items-center shadow-2xl relative overflow-hidden border-t-white/30 mb-6">
+                <div class="w-full max-h-[50vh] overflow-y-auto pr-2 lb-scroll">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="sticky top-0 bg-[var(--theme-bg)]/90 backdrop-blur-md text-xs md:text-sm text-bem-yellow border-b border-white/20 z-10">
+                            <tr>
+                                <th class="py-3 px-2 md:px-4 text-center">No</th>
+                                <th class="py-3 px-2 md:px-4" data-i18n="lb_col_name">Nama Pemain</th>
+                                <th class="py-3 px-2 md:px-4 hidden md:table-cell" data-i18n="lb_col_fac">Fakultas</th>
+                                <th class="py-3 px-2 md:px-4 text-right" data-i18n="lb_col_score">Skor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body" class="text-sm md:text-base font-medium">
+                            <!-- Tabel diisi JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <button onclick="resetToLobby()" class="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full border border-white/20 transition-all font-bold text-sm tracking-widest uppercase shadow-lg">
+                <i class="fas fa-arrow-left mr-2"></i> <span data-i18n="btn_back">Kembali</span>
+            </button>
+        </div>
+
+    </main>
+
+    <script>
+        const S_PIKIR = "https://i.ibb.co.com/m5LSLWZR/siska-Berpikir.webp", P_PIKIR = "https://i.ibb.co.com/1t4smcjW/Pandu-Berpikir.webp";
+        const S_TULIS = "https://i.ibb.co.com/219HvG7z/siska-Mencatat-menulis.webp", P_TULIS = "https://i.ibb.co.com/jkMYTLC8/pandu-Mencatat-menulis.webp";
+        const S_KAGET = "https://i.ibb.co.com/JW01gFcL/siska-Kaget-terkejut.webp", P_KAGET = "https://i.ibb.co.com/S74PHSFP/pandu-Kaget-terkejut.webp";
+        const S_BANGGA = "https://i.ibb.co.com/TxtXxfZ2/siska-Bangga-percaya-diri.webp", P_BANGGA = "https://i.ibb.co.com/gMHHJSGK/padnu-Bangga-percaya-diri.webp";
+        const S_SEMANGAT = "https://i.ibb.co.com/pvq9LRrJ/siska-Memberi-semangat.webp", P_SEMANGAT = "https://i.ibb.co.com/x8smg2Pr/pandu-Memberi-semangat.webp";
+        const S_ANTUK = "https://i.ibb.co.com/PZTgt4gk/siska-Mengantuk-lucu.webp", P_ANTUK = "https://i.ibb.co.com/fGvN3hgd/pandu-Mengantuk-lucu.webp";
+        const S_UMUM = "https://i.ibb.co.com/h5fJJQf/Mengumumkan.webp"; 
+        const S_SENANG = "https://i.ibb.co.com/1YqY20gX/Siska-Senang-ceria-Melompat-Confetti.webp", P_SENANG = "https://i.ibb.co.com/Y4BdvqJ9/Pandu-Senang-ceria-Melompat-Confetti.webp";
+        const S_GUGUP = "https://i.ibb.co.com/LXs9hV1N/siska-Gugup-cemas.webp", P_GUGUP = "https://i.ibb.co.com/qMXHBY1J/pandu-Gugup-cemas.webp";
+
+        const quizData = [
+            // LEVEL 1 (0-9)
+            { q: { id:"Apa kepanjangan dari UNSIKA?", en:"What does UNSIKA stand for?", su:"Naon kapanjangan tina UNSIKA?" }, opt: [{id:"Universitas Siliwangi Karawang",en:"Siliwangi University of Karawang",su:"Universitas Siliwangi Karawang"}, {id:"Universitas Singaperbangsa Karawang",en:"Singaperbangsa University of Karawang",su:"Universitas Singaperbangsa Karawang"}, {id:"Universitas Singa Perjuangan Karawang",en:"Singa Perjuangan University of Karawang",su:"Universitas Singa Perjuangan Karawang"}, {id:"Universitas Sinergi Karawang",en:"Sinergi University of Karawang",su:"Universitas Sinergi Karawang"}, {id:"Universitas Singaperbangsa Kertabumi",en:"Singaperbangsa Kertabumi University",su:"Universitas Singaperbangsa Kertabumi"}], ans: 1, siska: S_PIKIR, pandu: P_PIKIR },
+            { q: { id:"Apa warna jas almamater kebanggaan mahasiswa UNSIKA?", en:"What is the color of UNSIKA's alma mater jacket?", su:"Warna naon jas almamater kareueus mahasiswa UNSIKA?" }, opt: [{id:"Biru Tua",en:"Navy Blue",su:"Biru Kolot"}, {id:"Kuning",en:"Yellow",su:"Konéng"}, {id:"Merah Maroon",en:"Maroon Red",su:"Merah Maroon"}, {id:"Hijau Botol",en:"Bottle Green",su:"Héjo Botol"}, {id:"Abu-abu",en:"Gray",su:"Kulawu"}], ans: 2, siska: S_BANGGA, pandu: P_BANGGA },
+            { q: { id:"Saat ini, UNSIKA berstatus sebagai instansi pendidikan apa?", en:"Currently, what is the educational status of UNSIKA?", su:"Ayeuna, UNSIKA statusna salaku instansi pendidikan naon?" }, opt: [{id:"Perguruan Tinggi Swasta (PTS)",en:"Private University (PTS)",su:"Perguruan Tinggi Swasta (PTS)"}, {id:"Perguruan Tinggi Kedinasan (PTK)",en:"Official University (PTK)",su:"Perguruan Tinggi Kedinasan (PTK)"}, {id:"Perguruan Tinggi Negeri (PTN)",en:"State University (PTN)",su:"Perguruan Tinggi Negeri (PTN)"}, {id:"Institut Negeri",en:"State Institute",su:"Institut Negeri"}, {id:"Politeknik Negeri",en:"State Polytechnic",su:"Politéknik Negeri"}], ans: 2, siska: S_TULIS, pandu: P_TULIS },
+            { q: { id:"Di kabupaten manakah kampus utama UNSIKA berada?", en:"In which regency is the main campus of UNSIKA located?", su:"Di kabupatén mana kampus utama UNSIKA ayana?" }, opt: [{id:"Purwakarta",en:"Purwakarta",su:"Purwakarta"}, {id:"Subang",en:"Subang",su:"Subang"}, {id:"Bekasi",en:"Bekasi",su:"Bekasi"}, {id:"Karawang",en:"Karawang",su:"Karawang"}, {id:"Bogor",en:"Bogor",su:"Bogor"}], ans: 3, siska: S_PIKIR, pandu: P_PIKIR },
+            { q: { id:"Siapa nama tokoh sejarah daerah yang menjadi inspirasi nama universitas ini?", en:"Who is the local historical figure that inspired the name of this university?", su:"Saha nami tokoh sajarah daérah anu janten inspirasi nami ieu universitas?" }, opt: [{id:"Raden Adipati Singaperbangsa",en:"Raden Adipati Singaperbangsa",su:"Radén Adipati Singaperbangsa"}, {id:"Raden Adipati Wiranata",en:"Raden Adipati Wiranata",su:"Radén Adipati Wiranata"}, {id:"Prabu Siliwangi",en:"Prabu Siliwangi",su:"Prabu Siliwangi"}, {id:"Sunan Gunung Jati",en:"Sunan Gunung Jati",su:"Sunan Gunung Jati"}, {id:"Ki Hajar Dewantara",en:"Ki Hajar Dewantara",su:"Ki Hajar Dewantara"}], ans: 0, siska: S_UMUM, pandu: P_BANGGA },
+            { q: { id:"Di jalan apakah alamat kampus utama (Kampus 1) UNSIKA terletak?", en:"On which street is the main campus (Campus 1) of UNSIKA located?", su:"Di jalan naon alamat kampus utama (Kampus 1) UNSIKA ayana?" }, opt: [{id:"Jl. Tuparev",en:"Jl. Tuparev",su:"Jl. Tuparev"}, {id:"Jl. H.S. Ronggowaluyo",en:"Jl. H.S. Ronggowaluyo",su:"Jl. H.S. Ronggowaluyo"}, {id:"Jl. Lingkar Tanjungpura",en:"Jl. Lingkar Tanjungpura",su:"Jl. Lingkar Tanjungpura"}, {id:"Jl. Galuh Mas Raya",en:"Jl. Galuh Mas Raya",su:"Jl. Galuh Mas Raya"}, {id:"Jl. Kertabumi",en:"Jl. Kertabumi",su:"Jl. Kertabumi"}], ans: 1, siska: S_TULIS, pandu: P_TULIS },
+            { q: { id:"Sebutkan julukan populer untuk kampus UNSIKA berdasarkan warnanya!", en:"What is the popular nickname for UNSIKA campus based on its color?", su:"Sebutkeun julukan popilér pikeun kampus UNSIKA dumasar warnana!" }, opt: [{id:"Kampus Biru",en:"Blue Campus",su:"Kampus Biru"}, {id:"Kampus Perjuangan",en:"Struggle Campus",su:"Kampus Perjuangan"}, {id:"Kampus Merah Maroon",en:"Maroon Red Campus",su:"Kampus Merah Maroon"}, {id:"Kampus Pahlawan",en:"Hero Campus",su:"Kampus Pahlawan"}, {id:"Kampus Hijau",en:"Green Campus",su:"Kampus Héjo"}], ans: 2, siska: S_SEMANGAT, pandu: P_SEMANGAT },
+            { q: { id:"Ada berapa jumlah fakultas yang berdiri di UNSIKA saat ini?", en:"How many faculties are currently established in UNSIKA?", su:"Aya sabaraha jumlah fakultas anu ngadeg di UNSIKA ayeuna?" }, opt: [{id:"6 Fakultas",en:"6 Faculties",su:"6 Fakultas"}, {id:"7 Fakultas",en:"7 Faculties",su:"7 Fakultas"}, {id:"8 Fakultas",en:"8 Faculties",su:"8 Fakultas"}, {id:"9 Fakultas",en:"9 Faculties",su:"9 Fakultas"}, {id:"10 Fakultas",en:"10 Faculties",su:"10 Fakultas"}], ans: 3, siska: S_PIKIR, pandu: P_PIKIR },
+            { q: { id:"Jalur seleksi nasional masuk UNSIKA yang menggunakan ujian tertulis disebut?", en:"What is the national selection route for entering UNSIKA that uses a written exam called?", su:"Jalur seléksi nasional asup UNSIKA anu ngagunakeun ujian tinulis disebut?" }, opt: [{id:"SNBP",en:"SNBP",su:"SNBP"}, {id:"Mandiri (SMMPTN)",en:"Independent (SMMPTN)",su:"Mandiri (SMMPTN)"}, {id:"SNBT",en:"SNBT",su:"SNBT"}, {id:"PMDK",en:"PMDK",su:"PMDK"}, {id:"UMPTKIN",en:"UMPTKIN",su:"UMPTKIN"}], ans: 2, siska: S_KAGET, pandu: P_KAGET },
+            { q: { id:"Apa nama fakultas yang menaungi program studi Ilmu Komunikasi dan Ilmu Pemerintahan?", en:"What is the name of the faculty that houses the Communication Science and Government Science study programs?", su:"Naon nami fakultas anu nangtayungan program studi Élmu Komunikasi sareng Élmu Pamaréntahan?" }, opt: [{id:"Fakultas Hukum (FH)",en:"Faculty of Law (FH)",su:"Fakultas Hukum (FH)"}, {id:"Fakultas Ilmu Sosial dan Ilmu Politik (FISIP)",en:"Faculty of Social & Political Sci. (FISIP)",su:"Fakultas Élmu Sosial sarta Élmu Pulitik (FISIP)"}, {id:"Fakultas Keguruan dan Ilmu Pendidikan (FKIP)",en:"Faculty of Education (FKIP)",su:"Fakultas Kaguruan jeung Élmu Atikan (FKIP)"}, {id:"Fakultas Ekonomi dan Bisnis (FEB)",en:"Faculty of Economics & Business (FEB)",su:"Fakultas Ékonomi jeung Bisnis (FEB)"}, {id:"Fakultas Ilmu Komputer (FASILKOM)",en:"Faculty of Computer Sci. (FASILKOM)",su:"Fakultas Élmu Komputer (FASILKOM)"}], ans: 1, siska: S_BANGGA, pandu: P_BANGGA },
+
+            // LEVEL 2 (10-19)
+            { q: { id:"Pada tahun berapakah UNSIKA secara resmi beralih status menjadi Perguruan Tinggi Negeri (PTN)?", en:"In what year did UNSIKA officially change its status to a State University (PTN)?", su:"Dina taun sabaraha UNSIKA sacara resmi ngalih status jadi Perguruan Tinggi Negeri (PTN)?" }, opt: [{id:"2010",en:"2010",su:"2010"}, {id:"2012",en:"2012",su:"2012"}, {id:"2014",en:"2014",su:"2014"}, {id:"2016",en:"2016",su:"2016"}, {id:"2021",en:"2021",su:"2021"}], ans: 2, siska: S_TULIS, pandu: P_TULIS },
+            { q: { id:"Siapa nama Presiden Republik Indonesia yang meresmikan peralihan status PTN UNSIKA?", en:"Who was the President of the Republic of Indonesia that inaugurated UNSIKA's status change to PTN?", su:"Saha nami Présidén Républik Indonésia anu ngaresmikeun alihan status PTN UNSIKA?" }, opt: [{id:"B.J. Habibie",en:"B.J. Habibie",su:"B.J. Habibie"}, {id:"Abdurrahman Wahid",en:"Abdurrahman Wahid",su:"Abdurrahman Wahid"}, {id:"Megawati Soekarnoputri",en:"Megawati Soekarnoputri",su:"Megawati Soekarnoputri"}, {id:"Susilo Bambang Yudhoyono",en:"Susilo Bambang Yudhoyono",su:"Susilo Bambang Yudhoyono"}, {id:"Joko Widodo",en:"Joko Widodo",su:"Joko Widodo"}], ans: 3, siska: S_UMUM, pandu: P_BANGGA },
+            { q: { id:"Siapakah nama Rektor UNSIKA periode saat ini (2023–2027)?", en:"What is the name of the current Rector of UNSIKA (2023–2027 period)?", su:"Saha nami Réktor UNSIKA période ayeuna (2023–2027)?" }, opt: [{id:"Prof. Dr. Sri Mulyani",en:"Prof. Dr. Sri Mulyani",su:"Prof. Dr. Sri Mulyani"}, {id:"Prof. Dr. H. Ade Maman Suherman",en:"Prof. Dr. H. Ade Maman Suherman",su:"Prof. Dr. H. Ade Maman Suherman"}, {id:"Prof. Dr. H. Sutirna",en:"Prof. Dr. H. Sutirna",su:"Prof. Dr. H. Sutirna"}, {id:"Dr. H. Dede Jajang Suyamana",en:"Dr. H. Dede Jajang Suyamana",su:"Dr. H. Dede Jajang Suyamana"}, {id:"Prof. Dr. Saryono",en:"Prof. Dr. Saryono",su:"Prof. Dr. Saryono"}], ans: 1, siska: S_PIKIR, pandu: P_PIKIR },
+            { q: { id:"Apa nama yayasan yang pertama kali menaungi cikal bakal berdirinya kampus ini?", en:"What is the name of the foundation that first housed the forerunner of this campus?", su:"Naon nami yayasan anu munggaran nangtayungan cikal bakal ieu kampus?" }, opt: [{id:"Yayasan Perjuangan Karawang",en:"Karawang Struggle Foundation",su:"Yayasan Perjuangan Karawang"}, {id:"Yayasan Pembina Perguruan Tinggi Pangkal Perjuangan",en:"Pangkal Perjuangan Higher Ed. Dev. Foundation",su:"Yayasan Pembina Perguruan Tinggi Pangkal Perjuangan"}, {id:"Yayasan Singaperbangsa Karawang",en:"Singaperbangsa Karawang Foundation",su:"Yayasan Singaperbangsa Karawang"}, {id:"Yayasan Kertabumi",en:"Kertabumi Foundation",su:"Yayasan Kertabumi"}, {id:"Yayasan Pendidikan Karawang",en:"Karawang Education Foundation",su:"Yayasan Atikan Karawang"}], ans: 1, siska: S_KAGET, pandu: P_KAGET },
+            { q: { id:"Di kawasan manakah letak Kampus 2 UNSIKA yang saat ini sedang dikembangkan?", en:"In which area is Campus 2 of UNSIKA, currently under development, located?", su:"Di wewengkon mana perenahna Kampus 2 UNSIKA anu ayeuna nuju dikembangkeun?" }, opt: [{id:"Klari",en:"Klari",su:"Klari"}, {id:"Rengasdengklok",en:"Rengasdengklok",su:"Rengasdengklok"}, {id:"Cikampek",en:"Cikampek",su:"Cikampek"}, {id:"Jl. Lingkar Tanjungpura / Jalan Baru",en:"Jl. Lingkar Tanjungpura / Jalan Baru",su:"Jl. Lingkar Tanjungpura / Jalan Baru"}, {id:"Kosambi",en:"Kosambi",su:"Kosambi"}], ans: 3, siska: S_TULIS, pandu: P_TULIS },
+            { q: { id:"Dua fakultas apa yang menjadi cikal bakal (paling tua) berdirinya institusi ini pada tahun 1965?", en:"What two faculties were the forerunners (oldest) of this institution established in 1965?", su:"Dua fakultas naon anu janten cikal bakal (pangkolotna) ngadegna institusi ieu dina taun 1965?" }, opt: [{id:"Fakultas Pertanian & Teknik",en:"Agriculture & Engineering",su:"Fakultas Pertanian & Téknik"}, {id:"Fakultas Agama Islam & Hukum",en:"Islamic Religion & Law",su:"Fakultas Agama Islam & Hukum"}, {id:"Fakultas Hukum & Ekonomi",en:"Law & Economics",su:"Fakultas Hukum & Ékonomi"}, {id:"Fakultas Ekonomi & FKIP",en:"Economics & FKIP",su:"Fakultas Ékonomi & FKIP"}, {id:"Fakultas Teknik & FKIP",en:"Engineering & FKIP",su:"Fakultas Téknik & FKIP"}], ans: 2, siska: S_PIKIR, pandu: P_PIKIR },
+            { q: { id:"Pada tahun 2021, UNSIKA beralih status menjadi PTN-BLU. Apa kepanjangan dari BLU?", en:"In 2021, UNSIKA transitioned to PTN-BLU status. What does BLU stand for?", su:"Taun 2021, UNSIKA alih status jadi PTN-BLU. Naon kapanjangan tina BLU?" }, opt: [{id:"Badan Layanan Universitas",en:"University Service Agency",su:"Badan Layanan Universitas"}, {id:"Badan Layanan Umum",en:"Public Service Agency",su:"Badan Layanan Umum"}, {id:"Birokrasi Layanan Universitas",en:"University Service Bureaucracy",su:"Birokrasi Layanan Universitas"}, {id:"Badan Lembaga Umum",en:"Public Institution Agency",su:"Badan Lembaga Umum"}, {id:"Bantuan Layanan Umum",en:"Public Service Assistance",su:"Bantuan Layanan Umum"}], ans: 1, siska: S_SEMANGAT, pandu: P_SEMANGAT },
+            { q: { id:"Apa gelar kebangsawanan spesifik yang disandang oleh Raden Adipati Singaperbangsa?", en:"What specific noble title was held by Raden Adipati Singaperbangsa?", su:"Naon gelar kabangsawanan husus anu disandang ku Radén Adipati Singaperbangsa?" }, opt: [{id:"Adipati Kertabumi I",en:"Adipati Kertabumi I",su:"Adipati Kertabumi I"}, {id:"Adipati Kertabumi II",en:"Adipati Kertabumi II",su:"Adipati Kertabumi II"}, {id:"Adipati Kertabumi III",en:"Adipati Kertabumi III",su:"Adipati Kertabumi III"}, {id:"Adipati Kertabumi IV",en:"Adipati Kertabumi IV",su:"Adipati Kertabumi IV"}, {id:"Adipati Kertabumi V",en:"Adipati Kertabumi V",su:"Adipati Kertabumi V"}], ans: 2, siska: S_BANGGA, pandu: P_BANGGA },
+            { q: { id:"Fakultas mana di UNSIKA yang menaungi program studi S1 Administrasi Rumah Sakit?", en:"Which faculty at UNSIKA houses the Bachelor's in Hospital Administration program?", su:"Fakultas mana di UNSIKA anu nangtayungan program studi S1 Administrasi Rumah Sakit?" }, opt: [{id:"Fakultas Ilmu Kesehatan (FIKES)",en:"Faculty of Health Sciences (FIKES)",su:"Fakultas Élmu Kaséhatan (FIKES)"}, {id:"Fakultas Kedokteran",en:"Faculty of Medicine",su:"Fakultas Kedokteran"}, {id:"Fakultas Keperawatan",en:"Faculty of Nursing",su:"Fakultas Kaperawatan"}, {id:"Fakultas Farmasi",en:"Faculty of Pharmacy",su:"Fakultas Farmasi"}, {id:"Fakultas MIPA",en:"Faculty of Math & Science",su:"Fakultas MIPA"}], ans: 0, siska: S_TULIS, pandu: P_TULIS },
+            { q: { id:"Sebutkan nama Gedung Rektorat atau Kantor Pusat UNSIKA yang namanya diambil dari nama tokoh penting kampus!", en:"Name the UNSIKA Rectorate Building named after an important campus figure!", su:"Sebutkeun nami Gedong Réktorat atawa Kantor Puseur UNSIKA anu namina dicandak tina tokoh penting kampus!" }, opt: [{id:"Gedung Kertabumi",en:"Kertabumi Building",su:"Gedong Kertabumi"}, {id:"Gedung Soekarno",en:"Soekarno Building",su:"Gedong Soekarno"}, {id:"Gedung Pangkal Perjuangan",en:"Pangkal Perjuangan Building",su:"Gedong Pangkal Perjuangan"}, {id:"Gedung Opon H. Sopandji",en:"Opon H. Sopandji Building",su:"Gedong Opon H. Sopandji"}, {id:"Gedung Singaperbangsa",en:"Singaperbangsa Building",su:"Gedong Singaperbangsa"}], ans: 3, siska: S_PIKIR, pandu: P_PIKIR },
+
+            // LEVEL 3 (20-29)
+            { q: { id:"Sebutkan tanggal dan tahun persis berdirinya UNSIKA (sebelum diresmikan menjadi PTN)!", en:"State the exact date and year of UNSIKA's founding (before it became a PTN)!", su:"Sebutkeun tanggal jeung taun persis ngadegna UNSIKA (sateuacan diresmikeun jadi PTN)!" }, opt: [{id:"17 Agustus 1945",en:"August 17, 1945",su:"17 Agustus 1945"}, {id:"2 Februari 1982",en:"February 2, 1982",su:"2 Februari 1982"}, {id:"10 November 1982",en:"November 10, 1982",su:"10 Nopémber 1982"}, {id:"6 Oktober 2014",en:"October 6, 2014",su:"6 Oktober 2014"}, {id:"2 Mei 1965",en:"May 2, 1965",su:"2 Méi 1965"}], ans: 1, siska: S_KAGET, pandu: P_KAGET },
+            { q: { id:"Tanggal berapakah UNSIKA secara resmi ditetapkan menjadi PTN melalui Perpres RI Nomor 123 Tahun 2014?", en:"On what date was UNSIKA officially established as a PTN through Presidential Decree No. 123 of 2014?", su:"Tanggal sabaraha UNSIKA ditetepkeun jadi PTN ngaliwatan Perprés RI Nomer 123 Taun 2014?" }, opt: [{id:"1 Januari 2014",en:"January 1, 2014",su:"1 Januari 2014"}, {id:"2 Mei 2014",en:"May 2, 2014",su:"2 Méi 2014"}, {id:"6 Oktober 2014",en:"October 6, 2014",su:"6 Oktober 2014"}, {id:"10 November 2014",en:"November 10, 2014",su:"10 Nopémber 2014"}, {id:"25 Desember 2014",en:"December 25, 2014",su:"25 Désémber 2014"}], ans: 2, siska: S_TULIS, pandu: P_TULIS },
+            { q: { id:"Sebelum menjadi 'Universitas', embrio kampus ini awalnya bernama PTPP. Apa kepanjangan dari PTPP?", en:"Before becoming a 'University', this campus embryo was called PTPP. What does PTPP stand for?", su:"Saméméh jadi 'Universitas', émbrio kampus ieu asalna ngaranna PTPP. Naon kapanjangan PTPP?" }, opt: [{id:"Pendidikan Tinggi Pangkal Perjuangan",en:"Pangkal Perjuangan Higher Education",su:"Pendidikan Tinggi Pangkal Perjuangan"}, {id:"Perguruan Tinggi Pendidikan Perjuangan",en:"Perjuangan Education Higher Institute",su:"Perguruan Tinggi Pendidikan Perjuangan"}, {id:"Perguruan Tinggi Pangkal Perjuangan",en:"Pangkal Perjuangan Higher Institute",su:"Perguruan Tinggi Pangkal Perjuangan"}, {id:"Persatuan Tinggi Pemuda Perjuangan",en:"Struggle Youth Higher Association",su:"Persatuan Tinggi Pemuda Perjuangan"}, {id:"Perguruan Tinggi Pusat Perjuangan",en:"Center of Struggle Higher Institute",su:"Perguruan Tinggi Pusat Perjuangan"}], ans: 2, siska: S_PIKIR, pandu: P_PIKIR },
+            { q: { id:"Berdasarkan sejarahnya, Raden Adipati Singaperbangsa mendirikan Kadipaten Karawang di bawah kekuasaan kesultanan apa?", en:"Historically, Raden Adipati Singaperbangsa founded the Karawang Duchy under which sultanate's rule?", su:"Dumasar kana sajarah, Radén Adipati Singaperbangsa ngadegkeun Kadipaten Karawang di handapeun kakawasaan kasultanan naon?" }, opt: [{id:"Kesultanan Banten",en:"Banten Sultanate",su:"Kasultanan Banten"}, {id:"Kesultanan Cirebon",en:"Cirebon Sultanate",su:"Kasultanan Cirebon"}, {id:"Kesultanan Mataram",en:"Mataram Sultanate",su:"Kasultanan Mataram"}, {id:"Kesultanan Demak",en:"Demak Sultanate",su:"Kasultanan Demak"}, {id:"Kesultanan Ternate",en:"Ternate Sultanate",su:"Kasultanan Ternate"}], ans: 2, siska: S_ANTUK, pandu: P_ANTUK },
+            { q: { id:"Tanggal berapakah persisnya UNSIKA resmi berubah status dari PTN-Satker menjadi PTN-BLU?", en:"On what exact date did UNSIKA officially change its status from PTN-Satker to PTN-BLU?", su:"Tanggal sabaraha persisna UNSIKA resmi pindah status ti PTN-Satker ka PTN-BLU?" }, opt: [{id:"1 Januari 2021",en:"January 1, 2021",su:"1 Januari 2021"}, {id:"7 Juni 2021",en:"June 7, 2021",su:"7 Juni 2021"}, {id:"17 Agustus 2021",en:"August 17, 2021",su:"17 Agustus 2021"}, {id:"20 Oktober 2021",en:"October 20, 2021",su:"20 Oktober 2021"}, {id:"31 Desember 2021",en:"December 31, 2021",su:"31 Désémber 2021"}], ans: 1, siska: S_TULIS, pandu: P_TULIS },
+            { q: { id:"Pada tahun 1970, Fakultas Hukum sempat terpisah dan berdiri menjadi sekolah tinggi sendiri. Apa nama institusinya saat itu?", en:"In 1970, the Faculty of Law separated and became an independent college. What was its name?", su:"Taun 1970, Fakultas Hukum kungsi misah jadi sakola luhur mandiri. Naon ngaranna harita?" }, opt: [{id:"STH Kertabumi",en:"STH Kertabumi",su:"STH Kertabumi"}, {id:"STH Singaperbangsa",en:"STH Singaperbangsa",su:"STH Singaperbangsa"}, {id:"STHPP (Sekolah Tinggi Hukum Pangkal Perjuangan)",en:"STHPP (Pangkal Perjuangan School of Law)",su:"STHPP (Sakola Luhur Hukum Pangkal Perjuangan)"}, {id:"STIH Karawang",en:"STIH Karawang",su:"STIH Karawang"}, {id:"STH Jawa Barat",en:"STH West Java",su:"STH Jawa Barat"}], ans: 2, siska: S_PIKIR, pandu: P_PIKIR },
+            { q: { id:"Berapa total perkiraan jumlah Program Studi yang dimiliki UNSIKA saat ini (dari Diploma hingga Profesi)?", en:"What is the estimated total number of Study Programs currently offered by UNSIKA (from Diploma to Profession)?", su:"Sabaraha perkiraan total jumlah Program Studi nu dipibanda ku UNSIKA ayeuna (ti Diploma nepi ka Profési)?" }, opt: [{id:"Sekitar 20 Program Studi",en:"Around 20 Programs",su:"Kira-kira 20 Program Studi"}, {id:"Sekitar 30 Program Studi",en:"Around 30 Programs",su:"Kira-kira 30 Program Studi"}, {id:"Sekitar 48 Program Studi",en:"Around 48 Programs",su:"Kira-kira 48 Program Studi"}, {id:"Sekitar 60 Program Studi",en:"Around 60 Programs",su:"Kira-kira 60 Program Studi"}, {id:"Sekitar 75 Program Studi",en:"Around 75 Programs",su:"Kira-kira 75 Program Studi"}], ans: 2, siska: S_KAGET, pandu: P_KAGET },
+            { q: { id:"Saat ini, ada berapa banyak program studi magister (S2) yang beroperasi di UNSIKA?", en:"Currently, how many master's degree (S2) study programs operate at UNSIKA?", su:"Ayeuna, aya sabaraha program studi magister (S2) nu operasi di UNSIKA?" }, opt: [{id:"3 Program Magister",en:"3 Master's Programs",su:"3 Program Magister"}, {id:"5 Program Magister",en:"5 Master's Programs",su:"5 Program Magister"}, {id:"8 Program Magister",en:"8 Master's Programs",su:"8 Program Magister"}, {id:"12 Program Magister",en:"12 Master's Programs",su:"12 Program Magister"}, {id:"15 Program Magister",en:"15 Master's Programs",su:"15 Program Magister"}], ans: 2, siska: S_TULIS, pandu: P_TULIS },
+            { q: { id:"Gedung Auditorium utama tempat biasanya dilangsungkannya pelantikan atau acara besar rektorat terletak di lantai berapa?", en:"On which floor is the main Auditorium building, where inaugurations or large rectorate events are usually held, located?", su:"Di lantai sabaraha Gedong Auditorium utama tempat biasana dilaksanakeun pelantikan atawa acara gedé réktorat?" }, opt: [{id:"Lantai 1 Gedung Rektorat",en:"1st Floor Rectorate Bldg.",su:"Lantai 1 Gedong Réktorat"}, {id:"Lantai 2 Gedung Rektorat",en:"2nd Floor Rectorate Bldg.",su:"Lantai 2 Gedong Réktorat"}, {id:"Lantai 3 Gedung Rektorat",en:"3rd Floor Rectorate Bldg.",su:"Lantai 3 Gedong Réktorat"}, {id:"Lantai 4 Gedung Rektorat",en:"4th Floor Rectorate Bldg.",su:"Lantai 4 Gedong Réktorat"}, {id:"Lantai 5 Gedung Rektorat",en:"5th Floor Rectorate Bldg.",su:"Lantai 5 Gedong Réktorat"}], ans: 3, siska: S_PIKIR, pandu: P_PIKIR },
+            { q: { id:"Secara geografis dan administratif, di kecamatan manakah Kampus 1 UNSIKA berdiri?", en:"Geographically and administratively, in which sub-district does Campus 1 of UNSIKA stand?", su:"Sacara géografis jeung administratif, di kacamatan mana Kampus 1 UNSIKA ngadeg?" }, opt: [{id:"Kecamatan Karawang Barat",en:"West Karawang District",su:"Kacamatan Karawang Kulon"}, {id:"Kecamatan Karawang Timur",en:"East Karawang District",su:"Kacamatan Karawang Wétan"}, {id:"Kecamatan Telukjambe Timur",en:"East Telukjambe District",su:"Kacamatan Telukjambe Wétan"}, {id:"Kecamatan Telukjambe Barat",en:"West Telukjambe District",su:"Kacamatan Telukjambe Kulon"}, {id:"Kecamatan Klari",en:"Klari District",su:"Kacamatan Klari"}], ans: 2, siska: S_BANGGA, pandu: P_BANGGA }
+        ];
+
+        let playerName = "";
+        let playerFaculty = "";
+        let currentIdx = 0;
+        let score = 0;
+        let levelScore = 0;
+        let currentLevel = 1;
+        let streak = 0;
+        let wrongStreak = 0;
+        let lang = localStorage.getItem('preferredLanguage') || 'id';
+        let timer;
+        let timeLeft = 15;
+        const TIME_LIMIT = 15;
+
+        const dict = {
+            id: { 
+                nav_title: "Kuis Singapraja", 
+                reg_title: "Data Pemain", reg_sub: "Masukkan nama dan asal fakultasmu untuk masuk ke Leaderboard!", reg_name: "NAMA PANGGILAN", reg_faculty: "FAKULTAS", reg_faculty_ph: "-- Pilih Fakultas --", btn_next: "LANJUT",
+                lobby_title: "Singapraja Kuis", lobby_sub: "Uji wawasanmu tentang kampus tercinta UNSIKA", btn_start: "MULAI MAIN", btn_view_lb: "Lihat Papan Peringkat",
+                q_counter: "Soal", 
+                res_title: "HASIL AKHIR", res_score: "Total Skor (Semua Level)", btn_retry: "MAIN LAGI", txt_correct: "BENAR!", txt_wrong: "SALAH!", txt_timeout: "WAKTU HABIS!", txt_saving: "Menyimpan skor...", btn_save_lb: "Lihat Leaderboard",
+                lvl_sub: "Kerja bagus! Persiapkan dirimu untuk tantangan selanjutnya.", lvl_score: "Skor Level Ini", btn_home: "BERANDA", btn_next_lvl: "LANJUT LEVEL",
+                lb_title: "Papan Peringkat", lb_sub: "Top 10 Pemain dengan Skor Tertinggi!", lb_col_name: "Nama Pemain", lb_col_fac: "Fakultas", lb_col_score: "Skor", btn_back: "KEMBALI"
+            },
+            en: { 
+                nav_title: "Singapraja Quiz", 
+                reg_title: "Player Data", reg_sub: "Enter your name and faculty to join the Leaderboard!", reg_name: "NICKNAME", reg_faculty: "FACULTY", reg_faculty_ph: "-- Select Faculty --", btn_next: "NEXT",
+                lobby_title: "Archipelago Culture Quiz", lobby_sub: "Test your knowledge about our beloved UNSIKA!", btn_start: "START GAME", btn_view_lb: "View Leaderboard",
+                q_counter: "Question", 
+                res_title: "FINAL RESULTS", res_score: "Total Score (All Levels)", btn_retry: "PLAY AGAIN", txt_correct: "CORRECT!", txt_wrong: "WRONG!", txt_timeout: "TIME'S UP!", txt_saving: "Saving score...", btn_save_lb: "View Leaderboard",
+                lvl_sub: "Great job! Prepare yourself for the next challenge.", lvl_score: "This Level's Score", btn_home: "HOME", btn_next_lvl: "NEXT LEVEL",
+                lb_title: "Leaderboard", lb_sub: "Top 10 Players with the Highest Scores!", lb_col_name: "Player Name", lb_col_fac: "Faculty", lb_col_score: "Score", btn_back: "BACK"
+            },
+            su: { 
+                nav_title: "Kuis Singapraja", 
+                reg_title: "Data Pamaén", reg_sub: "Lebetkeun nami sareng asal fakultas anjeun pikeun asup kana Papan Peringkat!", reg_name: "NAMI", reg_faculty: "FAKULTAS", reg_faculty_ph: "-- Pilih Fakultas --", btn_next: "TERAS",
+                lobby_title: "Singapraja Kuis", lobby_sub: "Uji pangaweruh anjeun ngeunaan kampus UNSIKA!", btn_start: "MIMITIAN MAIN", btn_view_lb: "Tingali Papan Peringkat",
+                q_counter: "Soal", 
+                res_title: "HASIL AHIR", res_score: "Total Skor (Sadaya Level)", btn_retry: "MAÉN DEUI", txt_correct: "LERES!", txt_wrong: "LEPAT!", txt_timeout: "WAKTOS SÉÉP!", txt_saving: "Nyimpen skor...", btn_save_lb: "Tingali Papan Peringkat",
+                lvl_sub: "Saé pisan! Siapkeun diri pikeun tantangan salajengna.", lvl_score: "Skor Level Ieu", btn_home: "BERANDA", btn_next_lvl: "TERAS LEVEL",
+                lb_title: "Papan Peringkat", lb_sub: "Top 10 Pamaén kalayan Skor Pangluhurna!", lb_col_name: "Nami Pamaén", lb_col_fac: "Fakultas", lb_col_score: "Skor", btn_back: "WANGSUL"
+            }
+        };
+
+        function changeTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            let metaColor = "#4A0B0E"; 
+            if(theme === 'pink') metaColor = "#C70068"; 
+            else if(theme === 'merah-terang') metaColor = "#8A0004"; 
+            else if(theme === 'system') metaColor = window.matchMedia('(prefers-color-scheme: dark)').matches ? "#1f2937" : "#374151";
+            document.getElementById('theme-color-meta').setAttribute('content', metaColor);
+        }
+
+        function changeLang(l) {
+            lang = l;
+            localStorage.setItem('preferredLanguage', lang);
+            document.getElementById('lang-display').innerText = lang.toUpperCase();
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[lang][key]) el.innerText = dict[lang][key];
+            });
+            if(document.getElementById('screen-game').classList.contains('active')) {
+                document.getElementById('question-text').innerText = quizData[currentIdx].q[lang];
+                const btns = document.querySelectorAll('.btn-option');
+                quizData[currentIdx].opt.forEach((o, i) => { if(btns[i]) btns[i].innerText = o[lang]; });
+            }
+        }
+
+        changeLang(lang);
+        changeTheme('maroon');
+
+        function switchScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => { 
+                s.classList.remove('active'); 
+                s.style.display = 'none';
+            });
+            const scr = document.getElementById(id);
+            if (scr) {
+                scr.style.display = 'flex';
+                setTimeout(() => scr.classList.add('active'), 20);
+            }
+        }
+
+        function submitRegister() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            const facInput = document.getElementById('player-faculty').value;
+            const errEl = document.getElementById('reg-error');
+            
+            if(nameInput === "" || facInput === "") {
+                errEl.innerText = lang === 'id' ? "⚠️ Mohon isi Nama dan pilih Fakultasmu dulu ya!" : (lang === 'en' ? "⚠️ Please fill in your Name and select your Faculty!" : "⚠️ Punten, eusian Nami sareng pilih Fakultas heula!");
+                errEl.classList.remove('hidden');
+                return;
+            }
+            errEl.classList.add('hidden');
+            
+            playerName = nameInput;
+            playerFaculty = facInput;
+            
+            const greet = lang === 'id' ? `Halo, ${playerName}!` : (lang === 'en' ? `Hello, ${playerName}!` : `Sampurasun, ${playerName}!`);
+            document.getElementById('greeting-text').innerText = greet;
+            
+            switchScreen('screen-lobby');
+        }
+
+        function startQuiz() {
+            currentIdx = 0; score = 0; levelScore = 0; currentLevel = 1; streak = 0; wrongStreak = 0;
+            switchScreen('screen-game');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(timer);
+            timeLeft = TIME_LIMIT;
+            
+            const timerBar = document.getElementById('timer-bar');
+            timerBar.style.width = '100%';
+            timerBar.classList.remove('bg-wrong');
+            timerBar.classList.add('bg-bem-yellow');
+            
+            const overlay = document.getElementById('feedback-overlay');
+            overlay.style.opacity = '0';
+            overlay.classList.add('pointer-events-none');
+            
+            const q = quizData[currentIdx];
+            document.getElementById('q-counter-ui').innerText = `${currentIdx + 1}/30`;
+            document.getElementById('level-ui').innerText = `Level ${currentLevel}`;
+            updateStreakUI();
+            
+            document.getElementById('question-text').innerText = q.q[lang];
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+            
+            q.opt.forEach((item, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option glass-panel p-4 md:p-5 rounded-2xl text-left font-medium text-sm md:text-base border border-white/20 hover:bg-white/20 outline-none';
+                btn.innerText = item[lang];
+                btn.onclick = () => handleAnswer(i, btn);
+                grid.appendChild(btn);
+            });
+
+            setMascots(q.siska, q.pandu);
+
+            timer = setInterval(() => {
+                timeLeft--;
+                let pct = (timeLeft / TIME_LIMIT) * 100;
+                timerBar.style.width = pct + '%';
+                
+                if(pct < 30) {
+                    timerBar.classList.remove('bg-bem-yellow');
+                    timerBar.classList.add('bg-wrong');
+                }
+                if(timeLeft <= 0) handleAnswer(-1, null);
+            }, 1000);
+        }
+
+        function updateStreakUI() {
+            const ui = document.getElementById('streak-ui');
+            ui.innerHTML = `<i class="fas fa-fire text-orange-400"></i> Combo: ${streak}`;
+            if(streak >= 3) ui.classList.add('text-orange-400', 'animate-pulse', 'scale-110');
+            else ui.classList.remove('text-orange-400', 'animate-pulse', 'scale-110');
+        }
+
+        function setMascots(siskaUrl, panduUrl) {
+            ['mascot-siska', 'mascot-siska-mob'].forEach(id => {
+                const el = document.getElementById(id);
+                el.src = siskaUrl; el.classList.remove('mascot-happy', 'mascot-sad');
+            });
+            ['mascot-pandu', 'mascot-pandu-mob'].forEach(id => {
+                const el = document.getElementById(id);
+                el.src = panduUrl; el.classList.remove('mascot-happy', 'mascot-sad');
+            });
+        }
+
+        function applyMascotEmotion(state) {
+            const ids = ['mascot-siska', 'mascot-siska-mob', 'mascot-pandu', 'mascot-pandu-mob'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if(state === 'happy') el.classList.add('mascot-happy');
+                else if(state === 'sad') el.classList.add('mascot-sad');
+            });
+        }
+
+        function handleAnswer(selectedIdx, btnElement) {
+            clearInterval(timer);
+            const q = quizData[currentIdx];
+            const isCorrect = (selectedIdx === q.ans);
+            
+            document.querySelectorAll('.btn-option').forEach(b => b.classList.add('disabled'));
+            
+            const overlay = document.getElementById('feedback-overlay');
+            const fbText = document.getElementById('feedback-text');
+            overlay.classList.remove('pointer-events-none');
+            overlay.style.opacity = '1';
+            fbText.classList.remove('scale-90');
+            fbText.classList.add('scale-100');
+
+            if (isCorrect) {
+                streak++; wrongStreak = 0;
+                const pts = 1000 + (timeLeft * 50) + (streak >= 3 ? 500 : 0);
+                score += pts; levelScore += pts;
+                
+                if(btnElement) btnElement.classList.add('correct-answer');
+                fbText.innerText = dict[lang].txt_correct;
+                fbText.className = "text-5xl md:text-6xl font-display font-bold text-correct text-glow transform scale-100 transition-transform duration-300";
+                overlay.style.backgroundColor = "rgba(34,197,94,0.15)";
+                
+                setMascots(S_SENANG, P_SENANG);
+                applyMascotEmotion('happy');
+            } else {
+                streak = 0; wrongStreak++;
+                if(btnElement) btnElement.classList.add('wrong-answer');
+                
+                const correctBtn = document.getElementById('options-grid').children[q.ans];
+                if(correctBtn) {
+                    correctBtn.classList.add('correct-answer', 'shadow-[0_0_20px_rgba(34,197,94,0.8)]');
+                }
+                
+                fbText.innerText = selectedIdx === -1 ? dict[lang].txt_timeout : dict[lang].txt_wrong;
+                fbText.className = "text-5xl md:text-6xl font-display font-bold text-wrong text-glow transform scale-100 transition-transform duration-300";
+                overlay.style.backgroundColor = "rgba(239,68,68,0.15)";
+                
+                if(wrongStreak >= 2) {
+                    document.body.classList.add('shake-screen');
+                    setTimeout(() => document.body.classList.remove('shake-screen'), 500);
+                    setMascots(S_KAGET, P_KAGET);
+                } else {
+                    setMascots(S_GUGUP, P_GUGUP);
+                }
+                applyMascotEmotion('sad');
+            }
+
+            updateStreakUI();
+
+            setTimeout(() => {
+                fbText.classList.remove('scale-100');
+                fbText.classList.add('scale-90');
+                currentIdx++;
+                
+                if (currentIdx === 10 && currentLevel === 1) {
+                    showLevelResult(1);
+                } else if (currentIdx === 20 && currentLevel === 2) {
+                    showLevelResult(2);
+                } else if (currentIdx === 30) {
+                    endQuiz();
+                } else {
+                    loadQuestion();
+                }
+            }, 2500);
+        }
+
+        function showLevelResult(lvl) {
+            switchScreen('screen-level');
+            document.getElementById('level-title-ui').innerText = `LEVEL ${lvl} SELESAI`;
+            animateValue("level-score", 0, levelScore, 1000);
+        }
+
+        function nextLevel() {
+            currentLevel++;
+            levelScore = 0;
+            switchScreen('screen-game');
+            loadQuestion();
+        }
+
+        function abortQuiz() {
+            switchScreen('screen-lobby');
+        }
+
+        function endQuiz() {
+            switchScreen('screen-result');
+            animateValue("final-score", 0, score, 1500);
+        }
+
+        function resetToLobby() {
+            switchScreen('screen-lobby');
+        }
+
+        function animateValue(id, start, end, duration) {
+            if (start === end) {
+                document.getElementById(id).innerHTML = end;
+                return;
+            }
+            var range = end - start;
+            var current = start;
+            var increment = end > start ? Math.ceil(range / 50) : -1;
+            var stepTime = Math.abs(Math.floor(duration / (range / increment)));
+            var obj = document.getElementById(id);
+            var timer = setInterval(function() {
+                current += increment;
+                if (current >= end) {
+                    current = end;
+                    clearInterval(timer);
+                    obj.classList.add('scale-110');
+                    setTimeout(() => obj.classList.remove('scale-110'), 300);
+                }
+                obj.innerHTML = current;
+            }, stepTime);
+        }
+
+        function saveAndShowLeaderboard() {
+            document.getElementById('saving-state').classList.remove('hidden');
+            
+            setTimeout(() => {
+                let lb = JSON.parse(localStorage.getItem('unsika_leaderboard_v5')) || [];
+                lb.push({ name: playerName, faculty: playerFaculty, score: score });
+                lb.sort((a, b) => b.score - a.score);
+                lb = lb.slice(0, 50);
+                localStorage.setItem('unsika_leaderboard_v5', JSON.stringify(lb));
+                
+                document.getElementById('saving-state').classList.add('hidden');
+                viewLeaderboard();
+            }, 1200);
+        }
+
+        function viewLeaderboard() {
+            const lb = JSON.parse(localStorage.getItem('unsika_leaderboard_v5')) || [];
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '';
+
+            const top10 = lb.slice(0, 10);
+            top10.forEach((player, index) => {
+                const isMe = (player.name === playerName && player.score === score);
+                const rowClass = isMe ? "bg-bem-yellow/20 text-bem-yellow font-bold border-b border-bem-yellow/30" : "border-b border-white/10 hover:bg-white/5";
+                
+                let rankDisplay = index + 1;
+                if(index === 0) rankDisplay = "🥇";
+                if(index === 1) rankDisplay = "🥈";
+                if(index === 2) rankDisplay = "🥉";
+
+                const tr = document.createElement('tr');
+                tr.className = `transition-colors ${rowClass}`;
+                tr.innerHTML = `
+                    <td class="py-3 px-2 md:px-4 text-center font-display text-lg">${rankDisplay}</td>
+                    <td class="py-3 px-2 md:px-4">${player.name} ${isMe ? '<span class="text-xs bg-bem-yellow text-black px-2 py-0.5 rounded ml-2">Kamu</span>' : ''}</td>
+                    <td class="py-3 px-2 md:px-4 hidden md:table-cell text-xs opacity-80">${player.faculty}</td>
+                    <td class="py-3 px-2 md:px-4 text-right font-bold tracking-wider">${player.score.toLocaleString('id-ID')}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            switchScreen('screen-leaderboard');
+        }
+    </script>
+</body>
+</html>
