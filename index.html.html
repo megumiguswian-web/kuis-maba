@@ -100,6 +100,7 @@
 
     <main class="flex-grow flex flex-col items-center justify-center pt-24 pb-12 px-4 w-full">
         
+        <!-- SCREEN 0: AUTENTIKASI (LOGIN/REGISTER) -->
         <div id="screen-auth" class="screen active flex-col items-center text-center max-w-md w-full z-10" style="display: flex;">
             <div class="glass-panel p-8 md:p-10 rounded-[2rem] w-full flex flex-col items-center shadow-2xl border-t-white/30 relative mt-16 md:mt-10">
                 <img src="https://i.ibb.co.com/h5fJJQf/Mengumumkan.webp" class="w-32 mascot-img -mt-24 drop-shadow-xl mb-4">
@@ -116,7 +117,12 @@
 
                 <div class="w-full text-left mb-4">
                     <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider">PASSWORD</label>
-                    <input type="password" id="auth-password" placeholder="••••••••" class="glass-input w-full px-4 py-3 rounded-xl font-medium" autocomplete="off">
+                    <div class="relative">
+                        <input type="password" id="auth-password" placeholder="••••••••" class="glass-input w-full px-4 py-3 pr-12 rounded-xl font-medium" autocomplete="off">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 px-4 flex items-center text-white/50 hover:text-white transition-colors focus:outline-none">
+                            <i id="eye-icon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <div id="faculty-container" class="w-full text-left mb-8" style="display: none;">
@@ -146,6 +152,7 @@
             </div>
         </div>
 
+        <!-- SCREEN 1: LOBBY -->
         <div id="screen-lobby" class="screen flex-col items-center text-center max-w-2xl w-full z-10">
             <div class="flex justify-center items-end mb-4 gap-2 md:gap-6 relative">
                 <img src="https://i.ibb.co.com/1YqY20gX/Siska-Senang-ceria-Melompat-Confetti.webp" class="w-36 md:w-48 mascot-img drop-shadow-xl z-10 hover:scale-110">
@@ -164,6 +171,7 @@
             <button onclick="viewLeaderboard()" class="mt-6 text-sm font-bold text-white/70 hover:text-white underline decoration-dashed underline-offset-4 tracking-wider"><i class="fas fa-trophy mr-1 text-bem-yellow"></i> <span data-i18n="btn_view_lb">Lihat Papan Peringkat</span></button>
         </div>
 
+        <!-- SCREEN 2: GAMEPLAY -->
         <div id="screen-game" class="screen flex-col items-center w-full max-w-4xl hidden z-10">
             <div class="w-full flex justify-between items-center mb-6 glass-panel px-5 py-3 rounded-2xl shadow-lg mt-6">
                 <div class="font-bold flex items-center gap-4">
@@ -202,6 +210,7 @@
             <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 w-full px-2 md:px-0"></div>
         </div>
 
+        <!-- SCREEN 3: LEVEL RESULT -->
         <div id="screen-level" class="screen flex-col items-center w-full max-w-xl text-center hidden z-10">
             <h1 id="level-title-ui" class="text-4xl md:text-5xl font-display text-bem-yellow text-glow mb-4 tracking-wide">LEVEL SELESAI</h1>
             <p class="text-sm md:text-lg text-white/90 mb-8" data-i18n="lvl_sub">Kerja bagus! Persiapkan dirimu untuk tantangan selanjutnya.</p>
@@ -220,6 +229,7 @@
             </div>
         </div>
 
+        <!-- SCREEN 4: FINAL RESULT -->
         <div id="screen-result" class="screen flex-col items-center w-full max-w-xl text-center hidden z-10">
             <h1 class="text-4xl md:text-5xl font-display text-bem-yellow text-glow mb-8 tracking-wide" data-i18n="res_title">HASIL AKHIR</h1>
             <div class="glass-panel p-8 md:p-12 rounded-[2.5rem] w-full flex flex-col items-center shadow-2xl relative overflow-hidden border-t-white/30">
@@ -248,6 +258,7 @@
             </div>
         </div>
 
+        <!-- SCREEN 5: LEADERBOARD -->
         <div id="screen-leaderboard" class="screen flex-col items-center w-full max-w-2xl text-center hidden z-10">
             <h1 class="text-3xl md:text-5xl font-display text-bem-yellow text-glow mb-2 tracking-wide" data-i18n="lb_title">Papan Peringkat</h1>
             <p class="text-sm text-white/80 mb-6" data-i18n="lb_sub">Top 10 Pemain dengan Skor Tertinggi!</p>
@@ -264,7 +275,8 @@
                             </tr>
                         </thead>
                         <tbody id="leaderboard-body" class="text-sm md:text-base font-medium">
-                            </tbody>
+                            <!-- Tabel diisi JS -->
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -426,6 +438,21 @@
             }
         }
 
+        // FUNGSI VISIBILITAS PASSWORD
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('auth-password');
+            const eyeIcon = document.getElementById('eye-icon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
         // FUNGSI AUTH (LOGIN / REGISTER)
         function toggleAuthMode() {
             authMode = authMode === 'login' ? 'register' : 'login';
@@ -471,17 +498,10 @@
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Tunggu...';
             btn.classList.add('opacity-70', 'pointer-events-none');
 
-            const payload = {
-                action: authMode,
-                username: usernameInput,
-                password: passwordInput,
-                faculty: facInput
-            };
+            // Kita pakai metode GET agar tidak diblokir oleh CORS Google Apps Script
+            const queryParams = `?action=${authMode}&username=${encodeURIComponent(usernameInput)}&password=${encodeURIComponent(passwordInput)}&faculty=${encodeURIComponent(facInput || '')}`;
 
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            })
+            fetch(SCRIPT_URL + queryParams)
             .then(res => res.json())
             .then(data => {
                 btn.classList.remove('opacity-70', 'pointer-events-none');
@@ -490,7 +510,7 @@
                     if (authMode === 'register') {
                         showAuthError("✅ Registrasi berhasil! Silakan Masuk.", true);
                         document.getElementById('auth-password').value = ""; // clear password
-                        toggleAuthMode();
+                        toggleAuthMode(); // Alihkan ke mode login secara instan
                     } else { // Jika berhasil login
                         playerName = usernameInput;
                         playerFaculty = data.faculty; // ambil fakultas dari database
@@ -707,12 +727,12 @@
         function saveAndShowLeaderboard() {
             document.getElementById('saving-state').classList.remove('hidden');
             
-            // Simpan skor ke sheet Leaderboard
+            // Simpan skor ke sheet Leaderboard menggunakan POST dengan mode no-cors
             fetch(SCRIPT_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 body: JSON.stringify({ action: 'submit_score', name: playerName, faculty: playerFaculty, score: score })
             })
-            .then(res => res.json())
             .then(() => {
                 document.getElementById('saving-state').classList.add('hidden');
                 viewLeaderboard();
