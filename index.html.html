@@ -274,6 +274,8 @@
     </main>
 
     <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5Ion8YqBKUOZ-gF_RcFAUnkKcE5zSK3kN_6_tH2cZcx_N1KKImaXHYPBxt3nGRFGS0w/exec";
+
         const S_PIKIR = "https://i.ibb.co.com/m5LSLWZR/siska-Berpikir.webp", P_PIKIR = "https://i.ibb.co.com/1t4smcjW/Pandu-Berpikir.webp";
         const S_TULIS = "https://i.ibb.co.com/219HvG7z/siska-Mencatat-menulis.webp", P_TULIS = "https://i.ibb.co.com/jkMYTLC8/pandu-Mencatat-menulis.webp";
         const S_KAGET = "https://i.ibb.co.com/JW01gFcL/siska-Kaget-terkejut.webp", P_KAGET = "https://i.ibb.co.com/S74PHSFP/pandu-Kaget-terkejut.webp";
@@ -285,14 +287,14 @@
         const S_GUGUP = "https://i.ibb.co.com/LXs9hV1N/siska-Gugup-cemas.webp", P_GUGUP = "https://i.ibb.co.com/qMXHBY1J/pandu-Gugup-cemas.webp";
 
         const quizData = [
-            // LEVEL 1 (0-9) - TETAP
+            // LEVEL 1 (0-9)
             { q: { id:"Apa kepanjangan dari UNSIKA?", en:"What does UNSIKA stand for?", su:"Naon kapanjangan tina UNSIKA?" }, opt: [{id:"Universitas Siliwangi Karawang",en:"Siliwangi University of Karawang",su:"Universitas Siliwangi Karawang"}, {id:"Universitas Singaperbangsa Karawang",en:"Singaperbangsa University of Karawang",su:"Universitas Singaperbangsa Karawang"}, {id:"Universitas Singa Perjuangan Karawang",en:"Singa Perjuangan University of Karawang",su:"Universitas Singa Perjuangan Karawang"}, {id:"Universitas Sinergi Karawang",en:"Sinergi University of Karawang",su:"Universitas Sinergi Karawang"}, {id:"Universitas Singaperbangsa Kertabumi",en:"Singaperbangsa Kertabumi University",su:"Universitas Singaperbangsa Kertabumi"}], ans: 1, siska: S_PIKIR, pandu: P_PIKIR },
-            { q: { id:"Apa warna jas almamater kebanggaan mahasiswa UNSIKA?", en:"What is the color of UNSIKA's alma mater jacket?", su:"Warna naon jas almamater kareueus mahasiswa UNSIKA?" }, opt: [{id:"Biru Tua",en:"Navy Blue",su:"Biru Kolot"}, {id:"Kuning",en:"Yellow",su:"Konéng"}, {id:"Merah Maroon",en:"Maroon Red",su:"Merah Maroon"}, {id:"Hijau Botol",en:"Bottle Green",su:"Héjo Botol"}, {id:"Abu-abu",en:"Gray",su:"Kulawu"}], ans: 2, siska: S_BANGGA, pandu: P_BANGGA },
+            { q: { id:"Apa warna jas almamater kebanggaan mahasiswa UNSIKA?", en:"What is the color of UNSIKA's alma mater jacket?", su:"Warna naon jas almamater kareueus mahasiswa UNSIKA?" }, opt: [{id:"Biru Tua",en:"Navy Blue",su:"Biru Kolot"}, {id:"Kuning",en:"Yellow",su:"Konéng"}, {id:"Maroon",en:"Maroon",su:"Maroon"}, {id:"Hijau Botol",en:"Bottle Green",su:"Héjo Botol"}, {id:"Abu-abu",en:"Gray",su:"Kulawu"}], ans: 2, siska: S_BANGGA, pandu: P_BANGGA },
             { q: { id:"Saat ini, UNSIKA berstatus sebagai instansi pendidikan apa?", en:"Currently, what is the educational status of UNSIKA?", su:"Ayeuna, UNSIKA statusna salaku instansi pendidikan naon?" }, opt: [{id:"Perguruan Tinggi Swasta (PTS)",en:"Private University (PTS)",su:"Perguruan Tinggi Swasta (PTS)"}, {id:"Perguruan Tinggi Kedinasan (PTK)",en:"Official University (PTK)",su:"Perguruan Tinggi Kedinasan (PTK)"}, {id:"Perguruan Tinggi Negeri (PTN)",en:"State University (PTN)",su:"Perguruan Tinggi Negeri (PTN)"}, {id:"Institut Negeri",en:"State Institute",su:"Institut Negeri"}, {id:"Politeknik Negeri",en:"State Polytechnic",su:"Politéknik Negeri"}], ans: 2, siska: S_TULIS, pandu: P_TULIS },
             { q: { id:"Di kabupaten manakah kampus utama UNSIKA berada?", en:"In which regency is the main campus of UNSIKA located?", su:"Di kabupatén mana kampus utama UNSIKA ayana?" }, opt: [{id:"Purwakarta",en:"Purwakarta",su:"Purwakarta"}, {id:"Subang",en:"Subang",su:"Subang"}, {id:"Bekasi",en:"Bekasi",su:"Bekasi"}, {id:"Karawang",en:"Karawang",su:"Karawang"}, {id:"Bogor",en:"Bogor",su:"Bogor"}], ans: 3, siska: S_PIKIR, pandu: P_PIKIR },
             { q: { id:"Siapa nama tokoh sejarah daerah yang menjadi inspirasi nama universitas ini?", en:"Who is the local historical figure that inspired the name of this university?", su:"Saha nami tokoh sajarah daérah anu janten inspirasi nami ieu universitas?" }, opt: [{id:"Raden Adipati Singaperbangsa",en:"Raden Adipati Singaperbangsa",su:"Radén Adipati Singaperbangsa"}, {id:"Raden Adipati Wiranata",en:"Raden Adipati Wiranata",su:"Radén Adipati Wiranata"}, {id:"Prabu Siliwangi",en:"Prabu Siliwangi",su:"Prabu Siliwangi"}, {id:"Sunan Gunung Jati",en:"Sunan Gunung Jati",su:"Sunan Gunung Jati"}, {id:"Ki Hajar Dewantara",en:"Ki Hajar Dewantara",su:"Ki Hajar Dewantara"}], ans: 0, siska: S_UMUM, pandu: P_BANGGA },
             { q: { id:"Di jalan apakah alamat kampus utama (Kampus 1) UNSIKA terletak?", en:"On which street is the main campus (Campus 1) of UNSIKA located?", su:"Di jalan naon alamat kampus utama (Kampus 1) UNSIKA ayana?" }, opt: [{id:"Jl. Tuparev",en:"Jl. Tuparev",su:"Jl. Tuparev"}, {id:"Jl. H.S. Ronggowaluyo",en:"Jl. H.S. Ronggowaluyo",su:"Jl. H.S. Ronggowaluyo"}, {id:"Jl. Lingkar Tanjungpura",en:"Jl. Lingkar Tanjungpura",su:"Jl. Lingkar Tanjungpura"}, {id:"Jl. Galuh Mas Raya",en:"Jl. Galuh Mas Raya",su:"Jl. Galuh Mas Raya"}, {id:"Jl. Kertabumi",en:"Jl. Kertabumi",su:"Jl. Kertabumi"}], ans: 1, siska: S_TULIS, pandu: P_TULIS },
-            { q: { id:"Sebutkan julukan populer untuk kampus UNSIKA berdasarkan warnanya!", en:"What is the popular nickname for UNSIKA campus based on its color?", su:"Sebutkeun julukan popilér pikeun kampus UNSIKA dumasar warnana!" }, opt: [{id:"Kampus Biru",en:"Blue Campus",su:"Kampus Biru"}, {id:"Kampus Perjuangan",en:"Struggle Campus",su:"Kampus Perjuangan"}, {id:"Kampus Merah Maroon",en:"Maroon Red Campus",su:"Kampus Merah Maroon"}, {id:"Kampus Pahlawan",en:"Hero Campus",su:"Kampus Pahlawan"}, {id:"Kampus Hijau",en:"Green Campus",su:"Kampus Héjo"}], ans: 2, siska: S_SEMANGAT, pandu: P_SEMANGAT },
+            { q: { id:"Sebutkan julukan populer untuk kampus UNSIKA berdasarkan warnanya!", en:"What is the popular nickname for UNSIKA campus based on its color?", su:"Sebutkeun julukan popilér pikeun kampus UNSIKA dumasar warnana!" }, opt: [{id:"Kampus Biru",en:"Blue Campus",su:"Kampus Biru"}, {id:"Kampus Perjuangan",en:"Struggle Campus",su:"Kampus Perjuangan"}, {id:"Kampus Maroon",en:"Maroon Campus",su:"Kampus Maroon"}, {id:"Kampus Pahlawan",en:"Hero Campus",su:"Kampus Pahlawan"}, {id:"Kampus Hijau",en:"Green Campus",su:"Kampus Héjo"}], ans: 2, siska: S_SEMANGAT, pandu: P_SEMANGAT },
             { q: { id:"Ada berapa jumlah fakultas yang berdiri di UNSIKA saat ini?", en:"How many faculties are currently established in UNSIKA?", su:"Aya sabaraha jumlah fakultas anu ngadeg di UNSIKA ayeuna?" }, opt: [{id:"6 Fakultas",en:"6 Faculties",su:"6 Fakultas"}, {id:"7 Fakultas",en:"7 Faculties",su:"7 Fakultas"}, {id:"8 Fakultas",en:"8 Faculties",su:"8 Fakultas"}, {id:"9 Fakultas",en:"9 Faculties",su:"9 Fakultas"}, {id:"10 Fakultas",en:"10 Faculties",su:"10 Fakultas"}], ans: 3, siska: S_PIKIR, pandu: P_PIKIR },
             { q: { id:"Jalur seleksi nasional masuk UNSIKA yang menggunakan ujian tertulis disebut?", en:"What is the national selection route for entering UNSIKA that uses a written exam called?", su:"Jalur seléksi nasional asup UNSIKA anu ngagunakeun ujian tinulis disebut?" }, opt: [{id:"SNBP",en:"SNBP",su:"SNBP"}, {id:"Mandiri (SMMPTN)",en:"Independent (SMMPTN)",su:"Mandiri (SMMPTN)"}, {id:"SNBT",en:"SNBT",su:"SNBT"}, {id:"PMDK",en:"PMDK",su:"PMDK"}, {id:"UMPTKIN",en:"UMPTKIN",su:"UMPTKIN"}], ans: 2, siska: S_KAGET, pandu: P_KAGET },
             { q: { id:"Apa nama fakultas yang menaungi program studi Ilmu Komunikasi dan Ilmu Pemerintahan?", en:"What is the name of the faculty that houses the Communication Science and Government Science study programs?", su:"Naon nami fakultas anu nangtayungan program studi Élmu Komunikasi sareng Élmu Pamaréntahan?" }, opt: [{id:"Fakultas Hukum (FH)",en:"Faculty of Law (FH)",su:"Fakultas Hukum (FH)"}, {id:"Fakultas Ilmu Sosial dan Ilmu Politik (FISIP)",en:"Faculty of Social & Political Sci. (FISIP)",su:"Fakultas Élmu Sosial sarta Élmu Pulitik (FISIP)"}, {id:"Fakultas Keguruan dan Ilmu Pendidikan (FKIP)",en:"Faculty of Education (FKIP)",su:"Fakultas Kaguruan jeung Élmu Atikan (FKIP)"}, {id:"Fakultas Ekonomi dan Bisnis (FEB)",en:"Faculty of Economics & Business (FEB)",su:"Fakultas Ékonomi jeung Bisnis (FEB)"}, {id:"Fakultas Ilmu Komputer (FASILKOM)",en:"Faculty of Computer Sci. (FASILKOM)",su:"Fakultas Élmu Komputer (FASILKOM)"}], ans: 1, siska: S_BANGGA, pandu: P_BANGGA },
@@ -622,45 +624,71 @@
         function saveAndShowLeaderboard() {
             document.getElementById('saving-state').classList.remove('hidden');
             
-            setTimeout(() => {
-                let lb = JSON.parse(localStorage.getItem('unsika_leaderboard_v5')) || [];
-                lb.push({ name: playerName, faculty: playerFaculty, score: score });
-                lb.sort((a, b) => b.score - a.score);
-                lb = lb.slice(0, 50);
-                localStorage.setItem('unsika_leaderboard_v5', JSON.stringify(lb));
-                
+            // Mengirim data ke Google Sheets via API
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Menghindari masalah aturan keamanan lintas domain (CORS)
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: playerName, faculty: playerFaculty, score: score })
+            })
+            .then(() => {
+                // Karena menggunakan 'no-cors', kita langsung alihkan ke tampilan papan peringkat setelah sukses mengirim
                 document.getElementById('saving-state').classList.add('hidden');
                 viewLeaderboard();
-            }, 1200);
+            })
+            .catch(err => {
+                console.error("Gagal menyimpan skor:", err);
+                document.getElementById('saving-state').classList.add('hidden');
+                viewLeaderboard();
+            });
         }
 
         function viewLeaderboard() {
-            const lb = JSON.parse(localStorage.getItem('unsika_leaderboard_v5')) || [];
             const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '';
-
-            const top10 = lb.slice(0, 10);
-            top10.forEach((player, index) => {
-                const isMe = (player.name === playerName && player.score === score);
-                const rowClass = isMe ? "bg-bem-yellow/20 text-bem-yellow font-bold border-b border-bem-yellow/30" : "border-b border-white/10 hover:bg-white/5";
-                
-                let rankDisplay = index + 1;
-                if(index === 0) rankDisplay = "🥇";
-                if(index === 1) rankDisplay = "🥈";
-                if(index === 2) rankDisplay = "🥉";
-
-                const tr = document.createElement('tr');
-                tr.className = `transition-colors ${rowClass}`;
-                tr.innerHTML = `
-                    <td class="py-3 px-2 md:px-4 text-center font-display text-lg">${rankDisplay}</td>
-                    <td class="py-3 px-2 md:px-4">${player.name} ${isMe ? '<span class="text-xs bg-bem-yellow text-black px-2 py-0.5 rounded ml-2">Kamu</span>' : ''}</td>
-                    <td class="py-3 px-2 md:px-4 hidden md:table-cell text-xs opacity-80">${player.faculty}</td>
-                    <td class="py-3 px-2 md:px-4 text-right font-bold tracking-wider">${player.score.toLocaleString('id-ID')}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 opacity-70"><i class="fas fa-spinner fa-spin mr-2"></i>Memuat peringkat global...</td></tr>';
+            
             switchScreen('screen-leaderboard');
+
+            // Mengambil data peringkat ter-update dari Google Sheets
+            fetch(SCRIPT_URL)
+            .then(response => response.json())
+            .then(lb => {
+                tbody.innerHTML = '';
+                
+                // Batasi hanya menampilkan top 10 teratas di layar
+                const top10 = lb.slice(0, 10);
+                
+                if(top10.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 opacity-60">Belum ada skor tercatat. Jadilah yang pertama!</td></tr>';
+                    return;
+                }
+
+                top10.forEach((player, index) => {
+                    const isMe = (player.name === playerName && player.score === score);
+                    const rowClass = isMe ? "bg-bem-yellow/20 text-bem-yellow font-bold border-b border-bem-yellow/30" : "border-b border-white/10 hover:bg-white/5";
+                    
+                    let rankDisplay = index + 1;
+                    if(index === 0) rankDisplay = "🥇";
+                    if(index === 1) rankDisplay = "🥈";
+                    if(index === 2) rankDisplay = "🥉";
+
+                    const tr = document.createElement('tr');
+                    tr.className = `transition-colors ${rowClass}`;
+                    tr.innerHTML = `
+                        <td class="py-3 px-2 md:px-4 text-center font-display text-lg">${rankDisplay}</td>
+                        <td class="py-3 px-2 md:px-4">${player.name} ${isMe ? '<span class="text-xs bg-bem-yellow text-black px-2 py-0.5 rounded ml-2">Kamu</span>' : ''}</td>
+                        <td class="py-3 px-2 md:px-4 hidden md:table-cell text-xs opacity-80">${player.faculty}</td>
+                        <td class="py-3 px-2 md:px-4 text-right font-bold tracking-wider">${player.score.toLocaleString('id-ID')}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(err => {
+                console.error("Gagal memuat leaderboard:", err);
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-wrong font-bold">⚠️ Gagal memuat data. Periksa koneksi internetmu!</td></tr>';
+            });
         }
     </script>
 </body>
