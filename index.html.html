@@ -100,23 +100,28 @@
 
     <main class="flex-grow flex flex-col items-center justify-center pt-24 pb-12 px-4 w-full">
         
-        <!-- SCREEN 0: REGISTRASI -->
-        <div id="screen-register" class="screen active flex-col items-center text-center max-w-md w-full z-10" style="display: flex;">
+        <div id="screen-auth" class="screen active flex-col items-center text-center max-w-md w-full z-10" style="display: flex;">
             <div class="glass-panel p-8 md:p-10 rounded-[2rem] w-full flex flex-col items-center shadow-2xl border-t-white/30 relative mt-16 md:mt-10">
                 <img src="https://i.ibb.co.com/h5fJJQf/Mengumumkan.webp" class="w-32 mascot-img -mt-24 drop-shadow-xl mb-4">
-                <h1 class="text-3xl font-display text-bem-yellow text-glow mb-2" data-i18n="reg_title">Data Pemain</h1>
-                <p class="text-sm text-white/80 mb-4" data-i18n="reg_sub">Masukkan nama dan asal fakultasmu untuk masuk ke Leaderboard!</p>
                 
-                <p id="reg-error" class="text-bem-yellow bg-red-600/50 py-2 px-4 rounded-xl text-sm font-bold mb-4 hidden animate-pulse w-full"></p>
+                <h1 id="auth-title" class="text-3xl font-display text-bem-yellow text-glow mb-2" data-i18n="auth_login_title">Masuk Akun</h1>
+                <p id="auth-subtitle" class="text-sm text-white/80 mb-4" data-i18n="auth_login_sub">Masuk untuk menyimpan skor kamu ke Leaderboard!</p>
+                
+                <p id="auth-error" class="text-bem-yellow bg-red-600/50 py-2 px-4 rounded-xl text-sm font-bold mb-4 hidden w-full"></p>
 
                 <div class="w-full text-left mb-4">
-                    <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider" data-i18n="reg_name">NAMA PANGGILAN</label>
-                    <input type="text" id="player-name" placeholder="Cth: Rahmat" class="glass-input w-full px-4 py-3 rounded-xl font-medium" maxlength="15" autocomplete="off">
+                    <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider">USERNAME</label>
+                    <input type="text" id="auth-username" placeholder="Cth: rahmat123" class="glass-input w-full px-4 py-3 rounded-xl font-medium" maxlength="15" autocomplete="off">
+                </div>
+
+                <div class="w-full text-left mb-4">
+                    <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider">PASSWORD</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" class="glass-input w-full px-4 py-3 rounded-xl font-medium" autocomplete="off">
                 </div>
                 
-                <div class="w-full text-left mb-8">
+                <div id="faculty-container" class="w-full text-left mb-8" style="display: none;">
                     <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider" data-i18n="reg_faculty">FAKULTAS</label>
-                    <select id="player-faculty" class="glass-input w-full px-4 py-3 rounded-xl font-medium appearance-none">
+                    <select id="auth-faculty" class="glass-input w-full px-4 py-3 rounded-xl font-medium appearance-none">
                         <option value="" disabled selected data-i18n="reg_faculty_ph">-- Pilih Fakultas --</option>
                         <option value="Hukum (FH)">Hukum (FH)</option>
                         <option value="Ekonomi dan Bisnis (FEB)">Ekonomi dan Bisnis (FEB)</option>
@@ -131,13 +136,16 @@
                     </select>
                 </div>
                 
-                <button onclick="submitRegister()" class="w-full py-4 bg-bem-yellow hover:bg-yellow-400 text-bem-dark rounded-xl transition-all font-bold text-lg tracking-widest uppercase z-10 shadow-[0_0_20px_rgba(249,212,35,0.4)]">
-                    <span data-i18n="btn_next">LANJUT</span> <i class="fas fa-arrow-right ml-2"></i>
+                <button id="auth-btn" onclick="processAuth()" class="w-full py-4 bg-bem-yellow hover:bg-yellow-400 text-bem-dark rounded-xl transition-all font-bold text-lg tracking-widest uppercase z-10 shadow-[0_0_20px_rgba(249,212,35,0.4)]">
+                    <span data-i18n="btn_login_submit">MASUK</span> <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+
+                <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="mt-4 text-xs font-bold text-white/70 hover:text-white underline decoration-dashed underline-offset-4 tracking-wider" data-i18n="txt_no_acc">
+                    Belum punya akun? Daftar di sini
                 </button>
             </div>
         </div>
 
-        <!-- SCREEN 1: LOBBY -->
         <div id="screen-lobby" class="screen flex-col items-center text-center max-w-2xl w-full z-10">
             <div class="flex justify-center items-end mb-4 gap-2 md:gap-6 relative">
                 <img src="https://i.ibb.co.com/1YqY20gX/Siska-Senang-ceria-Melompat-Confetti.webp" class="w-36 md:w-48 mascot-img drop-shadow-xl z-10 hover:scale-110">
@@ -156,7 +164,6 @@
             <button onclick="viewLeaderboard()" class="mt-6 text-sm font-bold text-white/70 hover:text-white underline decoration-dashed underline-offset-4 tracking-wider"><i class="fas fa-trophy mr-1 text-bem-yellow"></i> <span data-i18n="btn_view_lb">Lihat Papan Peringkat</span></button>
         </div>
 
-        <!-- SCREEN 2: GAMEPLAY -->
         <div id="screen-game" class="screen flex-col items-center w-full max-w-4xl hidden z-10">
             <div class="w-full flex justify-between items-center mb-6 glass-panel px-5 py-3 rounded-2xl shadow-lg mt-6">
                 <div class="font-bold flex items-center gap-4">
@@ -195,7 +202,6 @@
             <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 w-full px-2 md:px-0"></div>
         </div>
 
-        <!-- SCREEN 3: LEVEL RESULT -->
         <div id="screen-level" class="screen flex-col items-center w-full max-w-xl text-center hidden z-10">
             <h1 id="level-title-ui" class="text-4xl md:text-5xl font-display text-bem-yellow text-glow mb-4 tracking-wide">LEVEL SELESAI</h1>
             <p class="text-sm md:text-lg text-white/90 mb-8" data-i18n="lvl_sub">Kerja bagus! Persiapkan dirimu untuk tantangan selanjutnya.</p>
@@ -214,7 +220,6 @@
             </div>
         </div>
 
-        <!-- SCREEN 4: FINAL RESULT -->
         <div id="screen-result" class="screen flex-col items-center w-full max-w-xl text-center hidden z-10">
             <h1 class="text-4xl md:text-5xl font-display text-bem-yellow text-glow mb-8 tracking-wide" data-i18n="res_title">HASIL AKHIR</h1>
             <div class="glass-panel p-8 md:p-12 rounded-[2.5rem] w-full flex flex-col items-center shadow-2xl relative overflow-hidden border-t-white/30">
@@ -243,7 +248,6 @@
             </div>
         </div>
 
-        <!-- SCREEN 5: LEADERBOARD -->
         <div id="screen-leaderboard" class="screen flex-col items-center w-full max-w-2xl text-center hidden z-10">
             <h1 class="text-3xl md:text-5xl font-display text-bem-yellow text-glow mb-2 tracking-wide" data-i18n="lb_title">Papan Peringkat</h1>
             <p class="text-sm text-white/80 mb-6" data-i18n="lb_sub">Top 10 Pemain dengan Skor Tertinggi!</p>
@@ -255,13 +259,12 @@
                             <tr>
                                 <th class="py-3 px-2 md:px-4 text-center">No</th>
                                 <th class="py-3 px-2 md:px-4" data-i18n="lb_col_name">Nama Pemain</th>
-                                <th class="py-3 px-2 md:px-4 hidden md:table-cell" data-i18n="lb_col_fac">Fakultas</th>
+                                <th class="py-3 px-1 md:px-4 text-xs md:text-sm" data-i18n="lb_col_fac">Fakultas</th>
                                 <th class="py-3 px-2 md:px-4 text-right" data-i18n="lb_col_score">Skor</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboard-body" class="text-sm md:text-base font-medium">
-                            <!-- Tabel diisi JS -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -274,6 +277,7 @@
     </main>
 
     <script>
+        // URL SCRIPT GOOGLE SHEETS
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5Ion8YqBKUOZ-gF_RcFAUnkKcE5zSK3kN_6_tH2cZcx_N1KKImaXHYPBxt3nGRFGS0w/exec";
 
         const S_PIKIR = "https://i.ibb.co.com/m5LSLWZR/siska-Berpikir.webp", P_PIKIR = "https://i.ibb.co.com/1t4smcjW/Pandu-Berpikir.webp";
@@ -299,7 +303,7 @@
             { q: { id:"Jalur seleksi nasional masuk UNSIKA yang menggunakan ujian tertulis disebut?", en:"What is the national selection route for entering UNSIKA that uses a written exam called?", su:"Jalur seléksi nasional asup UNSIKA anu ngagunakeun ujian tinulis disebut?" }, opt: [{id:"SNBP",en:"SNBP",su:"SNBP"}, {id:"Mandiri (SMMPTN)",en:"Independent (SMMPTN)",su:"Mandiri (SMMPTN)"}, {id:"SNBT",en:"SNBT",su:"SNBT"}, {id:"PMDK",en:"PMDK",su:"PMDK"}, {id:"UMPTKIN",en:"UMPTKIN",su:"UMPTKIN"}], ans: 2, siska: S_KAGET, pandu: P_KAGET },
             { q: { id:"Apa nama fakultas yang menaungi program studi Ilmu Komunikasi dan Ilmu Pemerintahan?", en:"What is the name of the faculty that houses the Communication Science and Government Science study programs?", su:"Naon nami fakultas anu nangtayungan program studi Élmu Komunikasi sareng Élmu Pamaréntahan?" }, opt: [{id:"Fakultas Hukum (FH)",en:"Faculty of Law (FH)",su:"Fakultas Hukum (FH)"}, {id:"Fakultas Ilmu Sosial dan Ilmu Politik (FISIP)",en:"Faculty of Social & Political Sci. (FISIP)",su:"Fakultas Élmu Sosial sarta Élmu Pulitik (FISIP)"}, {id:"Fakultas Keguruan dan Ilmu Pendidikan (FKIP)",en:"Faculty of Education (FKIP)",su:"Fakultas Kaguruan jeung Élmu Atikan (FKIP)"}, {id:"Fakultas Ekonomi dan Bisnis (FEB)",en:"Faculty of Economics & Business (FEB)",su:"Fakultas Ékonomi jeung Bisnis (FEB)"}, {id:"Fakultas Ilmu Komputer (FASILKOM)",en:"Faculty of Computer Sci. (FASILKOM)",su:"Fakultas Élmu Komputer (FASILKOM)"}], ans: 1, siska: S_BANGGA, pandu: P_BANGGA },
 
-            // LEVEL 2 (10-19) - Warna Bendera Fakultas
+            // LEVEL 2 (10-19)
             { q: { id:"Bendera dengan warna dasar Jingga (Oranye) merupakan lambang dari fakultas apa?", en:"The flag with a base color of Orange is the symbol of which faculty?", su:"Bendera nu warna dasarna Jingga (Oranye) mangrupa lambang ti fakultas naon?" }, opt: [{id:"Fakultas Agama Islam (FAI)",en:"Faculty of Islamic Religion (FAI)",su:"Fakultas Agama Islam (FAI)"}, {id:"Fakultas Ilmu Sosial dan Ilmu Politik (FISIP)",en:"Faculty of Social and Political Sciences (FISIP)",su:"Fakultas Élmu Sosial jeung Pulitik (FISIP)"}, {id:"Fakultas Hukum (FH)",en:"Faculty of Law (FH)",su:"Fakultas Hukum (FH)"}, {id:"Fakultas Keguruan dan Ilmu Pendidikan (FKIP)",en:"Faculty of Teacher Training & Education (FKIP)",su:"Fakultas Kaguruan jeung Élmu Atikan (FKIP)"}], ans: 1, siska: S_PIKIR, pandu: P_PIKIR },
             { q: { id:"Jika kamu melihat bendera berwarna Hijau berkibar di area kampus, bendera tersebut mewakili fakultas...", en:"If you see a Green flag flying in the campus area, the flag represents the faculty of...", su:"Lamun anjeun ningali bendera warna Héjo ngibar di wewengkon kampus, bendera éta ngawakilan fakultas..." }, opt: [{id:"Fakultas Teknik (FT)",en:"Faculty of Engineering (FT)",su:"Fakultas Téknik (FT)"}, {id:"Fakultas Ilmu Komputer (Fasilkom)",en:"Faculty of Computer Science (Fasilkom)",su:"Fakultas Élmu Komputer (Fasilkom)"}, {id:"Fakultas Pertanian (Faperta)",en:"Faculty of Agriculture (Faperta)",su:"Fakultas Pertanian (Faperta)"}, {id:"Fakultas Ilmu Kesehatan (Fikes)",en:"Faculty of Health Sciences (Fikes)",su:"Fakultas Élmu Kaséhatan (Fikes)"}], ans: 2, siska: S_TULIS, pandu: P_TULIS },
             { q: { id:"Fakultas Hukum (FH) UNSIKA memiliki bendera dengan warna dasar yang melambangkan keberanian dan keadilan, yaitu warna...", en:"The Faculty of Law (FH) UNSIKA has a flag with a base color that symbolizes courage and justice, which is...", su:"Fakultas Hukum (FH) UNSIKA boga bendera nu warna dasarna ngalambangkeun kawani jeung kaadilan, nyaéta warna..." }, opt: [{id:"Merah Tua",en:"Dark Red",su:"Beureum Kolot"}, {id:"Biru Tua",en:"Navy Blue",su:"Biru Kolot"}, {id:"Kuning",en:"Yellow",su:"Konéng"}, {id:"Ungu",en:"Purple",su:"Wungu"}], ans: 0, siska: S_BANGGA, pandu: P_BANGGA },
@@ -311,7 +315,7 @@
             { q: { id:"Warna Biru Toska (Turquoise) yang segar melambangkan aspek kesehatan dan kesembuhan. Warna ini merupakan warna bendera dari fakultas...", en:"The fresh Turquoise Blue color symbolizes health and healing aspects. This color is the flag color of the faculty of...", su:"Warna Biru Toska (Turquoise) nu seger ngalambangkeun aspék kaséhatan jeung kasembuhan. Warna ieu mangrupa warna bendera ti fakultas..." }, opt: [{id:"Fakultas Ilmu Sosial dan Ilmu Politik (FISIP)",en:"Faculty of Social and Political Sciences (FISIP)",su:"Fakultas Élmu Sosial jeung Pulitik (FISIP)"}, {id:"Fakultas Keguruan dan Ilmu Pendidikan (FKIP)",en:"Faculty of Teacher Training & Education (FKIP)",su:"Fakultas Kaguruan jeung Élmu Atikan (FKIP)"}, {id:"Fakultas Ilmu Kesehatan (Fikes)",en:"Faculty of Health Sciences (Fikes)",su:"Fakultas Élmu Kaséhatan (Fikes)"}, {id:"Fakultas Pertanian (Faperta)",en:"Faculty of Agriculture (Faperta)",su:"Fakultas Pertanian (Faperta)"}], ans: 2, siska: S_BANGGA, pandu: P_BANGGA },
             { q: { id:"Manakah di bawah ini pasangan fakultas dan warna bendera yang salah?", en:"Which of the following faculty and flag color pairs is incorrect?", su:"Nu mana di handap ieu pasangan fakultas jeung warna bendera nu lepat?" }, opt: [{id:"FISIP - Jingga",en:"FISIP - Orange",su:"FISIP - Jingga"}, {id:"FEB - Kuning",en:"FEB - Yellow",su:"FEB - Konéng"}, {id:"FT - Biru Tua",en:"FT - Navy Blue",su:"FT - Biru Kolot"}, {id:"FH - Biru Muda",en:"FH - Light Blue",su:"FH - Biru Ngora"}], ans: 3, siska: S_ANTUK, pandu: P_ANTUK },
 
-            // LEVEL 3 (20-29) - Sejarah dan Asal-Usul UNSIKA
+            // LEVEL 3 (20-29)
             { q: { id:"Nama \"Singaperbangsa\" pada UNSIKA diambil dari nama tokoh bersejarah, yaitu Raden Adipati Singaperbangsa. Siapakah beliau?", en:"The name \"Singaperbangsa\" in UNSIKA is taken from a historical figure, Raden Adipati Singaperbangsa. Who was he?", su:"Ngaran \"Singaperbangsa\" di UNSIKA dicokot tina ngaran tokoh sajarah, nyaéta Radén Adipati Singaperbangsa. Saha anjeunna?" }, opt: [{id:"Bupati kedua Kabupaten Karawang",en:"The second regent of Karawang Regency",su:"Bupati kadua Kabupatén Karawang"}, {id:"Pahlawan nasional asal Karawang yang melawan VOC",en:"A national hero from Karawang who fought the VOC",su:"Pahlawan nasional ti Karawang nu ngalawan VOC"}, {id:"Tokoh pendiri Kadipaten Karawang sekaligus bupati pertamanya",en:"The founder of the Karawang Duchy and its first regent",su:"Tokoh pangadeg Kadipatén Karawang sakaligus bupati kahijina"}, {id:"Ulama penyebar Islam pertama di wilayah Karawang",en:"The first Islamic scholar in the Karawang region",su:"Ulama panyebar Islam kahiji di wewengkon Karawang"}], ans: 2, siska: S_PIKIR, pandu: P_PIKIR },
             { q: { id:"Pada tanggal berapakah Universitas Singaperbangsa Karawang (UNSIKA) resmi didirikan?", en:"On what date was Singaperbangsa Karawang University (UNSIKA) officially founded?", su:"Dina kaping sabaraha Universitas Singaperbangsa Karawang (UNSIKA) resmi diadegkeun?" }, opt: [{id:"14 Juni 1965",en:"June 14, 1965",su:"14 Juni 1965"}, {id:"5 September 1965",en:"September 5, 1965",su:"5 Séptémber 1965"}, {id:"2 Februari 1982",en:"February 2, 1982",su:"2 Pébruari 1982"}, {id:"6 Oktober 2014",en:"October 6, 2014",su:"6 Oktober 2014"}], ans: 2, siska: S_UMUM, pandu: P_BANGGA },
             { q: { id:"Jauh sebelum menjadi universitas, cikal bakal UNSIKA berawal dari lembaga pendidikan bernama Perguruan Tinggi Pangkal Perjuangan (PTPP) yang didirikan tahun 1965. Yayasan apa yang membidani lahirnya PTPP ini?", en:"Long before becoming a university, the forerunner of UNSIKA began with an educational institution called PTPP founded in 1965. What foundation midwifed the birth of this PTPP?", su:"Jauh saméméh jadi universitas, cikal bakal UNSIKA dimimitian ku lembaga atikan nu ngaranna PTPP nu diadegkeun taun 1965. Yayasan naon nu ngababarkeun ieu PTPP?" }, opt: [{id:"Yayasan Pembina Perguruan Tinggi Pangkal Perjuangan (YPPTPP)",en:"YPPTPP Foundation",su:"Yayasan Pembina Perguruan Tinggi Pangkal Perjuangan (YPPTPP)"}, {id:"Yayasan Singaperbangsa Karawang",en:"Singaperbangsa Karawang Foundation",su:"Yayasan Singaperbangsa Karawang"}, {id:"Yayasan Ronggowaluyo Pangkal Perjuangan",en:"Ronggowaluyo Pangkal Perjuangan Foundation",su:"Yayasan Ronggowaluyo Pangkal Perjuangan"}, {id:"Yayasan Pendidikan Pemuda Karawang",en:"Karawang Youth Education Foundation",su:"Yayasan Atikan Pamuda Karawang"}], ans: 0, siska: S_TULIS, pandu: P_TULIS },
@@ -332,6 +336,8 @@
         let currentLevel = 1;
         let streak = 0;
         let wrongStreak = 0;
+        let authMode = 'login';
+        
         let lang = localStorage.getItem('preferredLanguage') || 'id';
         let timer;
         let timeLeft = 15;
@@ -340,7 +346,10 @@
         const dict = {
             id: { 
                 nav_title: "Kuis Singapraja", 
-                reg_title: "Data Pemain", reg_sub: "Masukkan nama dan asal fakultasmu untuk masuk ke Leaderboard!", reg_name: "NAMA PANGGILAN", reg_faculty: "FAKULTAS", reg_faculty_ph: "-- Pilih Fakultas --", btn_next: "LANJUT",
+                auth_login_title: "Masuk Akun", auth_login_sub: "Masuk untuk menyimpan skor kamu ke Leaderboard!",
+                auth_reg_title: "Daftar Akun", auth_reg_sub: "Buat akun baru untuk mulai bermain!",
+                txt_no_acc: "Belum punya akun? Daftar di sini", txt_has_acc: "Sudah punya akun? Masuk di sini",
+                btn_login_submit: "MASUK", btn_reg_submit: "DAFTAR", reg_faculty: "FAKULTAS", reg_faculty_ph: "-- Pilih Fakultas --",
                 lobby_title: "Singapraja Kuis", lobby_sub: "Uji wawasanmu tentang kampus tercinta UNSIKA", btn_start: "MULAI MAIN", btn_view_lb: "Lihat Papan Peringkat",
                 q_counter: "Soal", 
                 res_title: "HASIL AKHIR", res_score: "Total Skor (Semua Level)", btn_retry: "MAIN LAGI", txt_correct: "BENAR!", txt_wrong: "SALAH!", txt_timeout: "WAKTU HABIS!", txt_saving: "Menyimpan skor...", btn_save_lb: "Lihat Leaderboard",
@@ -349,7 +358,10 @@
             },
             en: { 
                 nav_title: "Singapraja Quiz", 
-                reg_title: "Player Data", reg_sub: "Enter your name and faculty to join the Leaderboard!", reg_name: "NICKNAME", reg_faculty: "FACULTY", reg_faculty_ph: "-- Select Faculty --", btn_next: "NEXT",
+                auth_login_title: "Login", auth_login_sub: "Login to save your score to the Leaderboard!",
+                auth_reg_title: "Register", auth_reg_sub: "Create a new account to start playing!",
+                txt_no_acc: "Don't have an account? Register here", txt_has_acc: "Already have an account? Login here",
+                btn_login_submit: "LOGIN", btn_reg_submit: "REGISTER", reg_faculty: "FACULTY", reg_faculty_ph: "-- Select Faculty --",
                 lobby_title: "Archipelago Culture Quiz", lobby_sub: "Test your knowledge about our beloved UNSIKA!", btn_start: "START GAME", btn_view_lb: "View Leaderboard",
                 q_counter: "Question", 
                 res_title: "FINAL RESULTS", res_score: "Total Score (All Levels)", btn_retry: "PLAY AGAIN", txt_correct: "CORRECT!", txt_wrong: "WRONG!", txt_timeout: "TIME'S UP!", txt_saving: "Saving score...", btn_save_lb: "View Leaderboard",
@@ -358,7 +370,10 @@
             },
             su: { 
                 nav_title: "Kuis Singapraja", 
-                reg_title: "Data Pamaén", reg_sub: "Lebetkeun nami sareng asal fakultas anjeun pikeun asup kana Papan Peringkat!", reg_name: "NAMI", reg_faculty: "FAKULTAS", reg_faculty_ph: "-- Pilih Fakultas --", btn_next: "TERAS",
+                auth_login_title: "Asup Akun", auth_login_sub: "Asup pikeun nyimpen skor anjeun kana Papan Peringkat!",
+                auth_reg_title: "Daptar Akun", auth_reg_sub: "Jieun akun anyar pikeun mimitian maén!",
+                txt_no_acc: "Teu acan gaduh akun? Daptar di dieu", txt_has_acc: "Tos gaduh akun? Asup di dieu",
+                btn_login_submit: "ASUP", btn_reg_submit: "DAPTAR", reg_faculty: "FAKULTAS", reg_faculty_ph: "-- Pilih Fakultas --",
                 lobby_title: "Singapraja Kuis", lobby_sub: "Uji pangaweruh anjeun ngeunaan kampus UNSIKA!", btn_start: "MIMITIAN MAIN", btn_view_lb: "Tingali Papan Peringkat",
                 q_counter: "Soal", 
                 res_title: "HASIL AHIR", res_score: "Total Skor (Sadaya Level)", btn_retry: "MAÉN DEUI", txt_correct: "LERES!", txt_wrong: "LEPAT!", txt_timeout: "WAKTOS SÉÉP!", txt_saving: "Nyimpen skor...", btn_save_lb: "Tingali Papan Peringkat",
@@ -382,7 +397,12 @@
             document.getElementById('lang-display').innerText = lang.toUpperCase();
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (dict[lang][key]) el.innerText = dict[lang][key];
+                if (dict[lang][key]) el.innerHTML = dict[lang][key];
+                
+                // update icon logic
+                if(key === 'btn_login_submit' || key === 'btn_reg_submit') {
+                    el.innerHTML += ' <i class="fas fa-arrow-right ml-2"></i>';
+                }
             });
             if(document.getElementById('screen-game').classList.contains('active')) {
                 document.getElementById('question-text').innerText = quizData[currentIdx].q[lang];
@@ -406,25 +426,88 @@
             }
         }
 
-        function submitRegister() {
-            const nameInput = document.getElementById('player-name').value.trim();
-            const facInput = document.getElementById('player-faculty').value;
-            const errEl = document.getElementById('reg-error');
+        // FUNGSI AUTH (LOGIN / REGISTER)
+        function toggleAuthMode() {
+            authMode = authMode === 'login' ? 'register' : 'login';
+            document.getElementById('auth-error').classList.add('hidden');
             
-            if(nameInput === "" || facInput === "") {
-                errEl.innerText = lang === 'id' ? "⚠️ Mohon isi Nama dan pilih Fakultasmu dulu ya!" : (lang === 'en' ? "⚠️ Please fill in your Name and select your Faculty!" : "⚠️ Punten, eusian Nami sareng pilih Fakultas heula!");
-                errEl.classList.remove('hidden');
-                return;
+            if(authMode === 'register') {
+                document.getElementById('auth-title').setAttribute('data-i18n', 'auth_reg_title');
+                document.getElementById('auth-subtitle').setAttribute('data-i18n', 'auth_reg_sub');
+                document.getElementById('faculty-container').style.display = 'block';
+                document.getElementById('auth-btn').querySelector('span').setAttribute('data-i18n', 'btn_reg_submit');
+                document.getElementById('auth-toggle-btn').setAttribute('data-i18n', 'txt_has_acc');
+            } else {
+                document.getElementById('auth-title').setAttribute('data-i18n', 'auth_login_title');
+                document.getElementById('auth-subtitle').setAttribute('data-i18n', 'auth_login_sub');
+                document.getElementById('faculty-container').style.display = 'none';
+                document.getElementById('auth-btn').querySelector('span').setAttribute('data-i18n', 'btn_login_submit');
+                document.getElementById('auth-toggle-btn').setAttribute('data-i18n', 'txt_no_acc');
             }
-            errEl.classList.add('hidden');
-            
-            playerName = nameInput;
-            playerFaculty = facInput;
-            
-            const greet = lang === 'id' ? `Halo, ${playerName}!` : (lang === 'en' ? `Hello, ${playerName}!` : `Sampurasun, ${playerName}!`);
-            document.getElementById('greeting-text').innerText = greet;
-            
-            switchScreen('screen-lobby');
+            changeLang(lang); // refresh text
+        }
+
+        function showAuthError(msg, isSuccess = false) {
+            const errEl = document.getElementById('auth-error');
+            errEl.innerText = msg;
+            errEl.classList.remove('hidden', 'bg-red-600/50', 'bg-green-600/50');
+            errEl.classList.add(isSuccess ? 'bg-green-600/50' : 'bg-red-600/50');
+        }
+
+        function processAuth() {
+            const usernameInput = document.getElementById('auth-username').value.trim();
+            const passwordInput = document.getElementById('auth-password').value.trim();
+            const facInput = document.getElementById('auth-faculty').value;
+            const btn = document.getElementById('auth-btn');
+
+            if(usernameInput === "" || passwordInput === "") {
+                showAuthError("⚠️ Mohon isi Username dan Password!"); return;
+            }
+            if(authMode === 'register' && !facInput) {
+                showAuthError("⚠️ Mohon pilih Fakultasmu!"); return;
+            }
+
+            document.getElementById('auth-error').classList.add('hidden');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Tunggu...';
+            btn.classList.add('opacity-70', 'pointer-events-none');
+
+            const payload = {
+                action: authMode,
+                username: usernameInput,
+                password: passwordInput,
+                faculty: facInput
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.classList.remove('opacity-70', 'pointer-events-none');
+                
+                if (data.status === 'success') {
+                    if (authMode === 'register') {
+                        showAuthError("✅ Registrasi berhasil! Silakan Masuk.", true);
+                        document.getElementById('auth-password').value = ""; // clear password
+                        toggleAuthMode();
+                    } else { // Jika berhasil login
+                        playerName = usernameInput;
+                        playerFaculty = data.faculty; // ambil fakultas dari database
+                        const greet = lang === 'id' ? `Halo, ${playerName}!` : (lang === 'en' ? `Hello, ${playerName}!` : `Sampurasun, ${playerName}!`);
+                        document.getElementById('greeting-text').innerText = greet;
+                        switchScreen('screen-lobby');
+                    }
+                } else {
+                    showAuthError("⚠️ " + data.message);
+                    changeLang(lang); // reset button text
+                }
+            })
+            .catch(err => {
+                btn.classList.remove('opacity-70', 'pointer-events-none');
+                showAuthError("⚠️ Gagal terhubung ke server. Coba lagi.");
+                changeLang(lang);
+            });
         }
 
         function startQuiz() {
@@ -624,17 +707,13 @@
         function saveAndShowLeaderboard() {
             document.getElementById('saving-state').classList.remove('hidden');
             
-            // Mengirim data ke Google Sheets via API
+            // Simpan skor ke sheet Leaderboard
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // Menghindari masalah aturan keamanan lintas domain (CORS)
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name: playerName, faculty: playerFaculty, score: score })
+                body: JSON.stringify({ action: 'submit_score', name: playerName, faculty: playerFaculty, score: score })
             })
+            .then(res => res.json())
             .then(() => {
-                // Karena menggunakan 'no-cors', kita langsung alihkan ke tampilan papan peringkat setelah sukses mengirim
                 document.getElementById('saving-state').classList.add('hidden');
                 viewLeaderboard();
             })
@@ -651,13 +730,10 @@
             
             switchScreen('screen-leaderboard');
 
-            // Mengambil data peringkat ter-update dari Google Sheets
             fetch(SCRIPT_URL)
             .then(response => response.json())
             .then(lb => {
                 tbody.innerHTML = '';
-                
-                // Batasi hanya menampilkan top 10 teratas di layar
                 const top10 = lb.slice(0, 10);
                 
                 if(top10.length === 0) {
@@ -678,8 +754,8 @@
                     tr.className = `transition-colors ${rowClass}`;
                     tr.innerHTML = `
                         <td class="py-3 px-2 md:px-4 text-center font-display text-lg">${rankDisplay}</td>
-                        <td class="py-3 px-2 md:px-4">${player.name} ${isMe ? '<span class="text-xs bg-bem-yellow text-black px-2 py-0.5 rounded ml-2">Kamu</span>' : ''}</td>
-                        <td class="py-3 px-2 md:px-4 hidden md:table-cell text-xs opacity-80">${player.faculty}</td>
+                        <td class="py-3 px-2 md:px-4">${player.name} ${isMe ? '<span class="text-[10px] bg-bem-yellow text-black px-1.5 py-0.5 rounded ml-1">Kamu</span>' : ''}</td>
+                        <td class="py-3 px-1 md:px-4 text-[10px] md:text-xs opacity-80 leading-tight">${player.faculty}</td>
                         <td class="py-3 px-2 md:px-4 text-right font-bold tracking-wider">${player.score.toLocaleString('id-ID')}</td>
                     `;
                     tbody.appendChild(tr);
