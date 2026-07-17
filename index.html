@@ -100,34 +100,24 @@
 
     <main class="flex-grow flex flex-col items-center justify-center pt-24 pb-12 px-4 w-full">
         
-        <!-- SCREEN 0: AUTENTIKASI (LOGIN/REGISTER) -->
-        <div id="screen-auth" class="screen active flex-col items-center text-center max-w-md w-full z-10" style="display: flex;">
+        <!-- SCREEN 0: REGISTRASI NAMA (AKUN) -->
+        <div id="screen-register" class="screen flex-col items-center text-center max-w-md w-full z-10">
             <div class="glass-panel p-8 md:p-10 rounded-[2rem] w-full flex flex-col items-center shadow-2xl border-t-white/30 relative mt-16 md:mt-10">
                 <img src="https://i.ibb.co.com/h5fJJQf/Mengumumkan.webp" class="w-32 mascot-img -mt-24 drop-shadow-xl mb-4">
                 
-                <h1 id="auth-title" class="text-3xl font-display text-bem-yellow text-glow mb-2" data-i18n="auth_login_title">Masuk Akun</h1>
-                <p id="auth-subtitle" class="text-sm text-white/80 mb-4" data-i18n="auth_login_sub">Masuk untuk menyimpan skor kamu ke Leaderboard!</p>
+                <h1 class="text-3xl font-display text-bem-yellow text-glow mb-2" data-i18n="reg_title">Data Pemain</h1>
+                <p class="text-sm text-white/80 mb-6" data-i18n="reg_sub">Masukkan nama dan fakultasmu. Data ini akan tersimpan otomatis!</p>
                 
-                <p id="auth-error" class="text-bem-yellow bg-red-600/50 py-2 px-4 rounded-xl text-sm font-bold mb-4 hidden w-full"></p>
+                <p id="reg-error" class="text-bem-yellow bg-red-600/50 py-2 px-4 rounded-xl text-sm font-bold mb-4 hidden w-full"></p>
 
                 <div class="w-full text-left mb-4">
-                    <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider">USERNAME</label>
-                    <input type="text" id="auth-username" placeholder="Cth: rahmat123" class="glass-input w-full px-4 py-3 rounded-xl font-medium" maxlength="15" autocomplete="off">
-                </div>
-
-                <div class="w-full text-left mb-4">
-                    <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider">PASSWORD</label>
-                    <div class="relative">
-                        <input type="password" id="auth-password" placeholder="••••••••" class="glass-input w-full px-4 py-3 pr-12 rounded-xl font-medium" autocomplete="off">
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 px-4 flex items-center text-white/50 hover:text-white transition-colors focus:outline-none">
-                            <i id="eye-icon" class="fas fa-eye"></i>
-                        </button>
-                    </div>
+                    <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider" data-i18n="reg_name">NAMA PANGGILAN</label>
+                    <input type="text" id="player-name" placeholder="Cth: Rahmat" class="glass-input w-full px-4 py-3 rounded-xl font-medium" maxlength="15" autocomplete="off">
                 </div>
                 
-                <div id="faculty-container" class="w-full text-left mb-8" style="display: none;">
+                <div class="w-full text-left mb-8">
                     <label class="block text-xs font-bold text-white/70 mb-2 tracking-wider" data-i18n="reg_faculty">FAKULTAS</label>
-                    <select id="auth-faculty" class="glass-input w-full px-4 py-3 rounded-xl font-medium appearance-none">
+                    <select id="player-faculty" class="glass-input w-full px-4 py-3 rounded-xl font-medium appearance-none">
                         <option value="" disabled selected data-i18n="reg_faculty_ph">-- Pilih Fakultas --</option>
                         <option value="Hukum (FH)">Hukum (FH)</option>
                         <option value="Ekonomi dan Bisnis (FEB)">Ekonomi dan Bisnis (FEB)</option>
@@ -142,12 +132,8 @@
                     </select>
                 </div>
                 
-                <button id="auth-btn" onclick="processAuth()" class="w-full py-4 bg-bem-yellow hover:bg-yellow-400 text-bem-dark rounded-xl transition-all font-bold text-lg tracking-widest uppercase z-10 shadow-[0_0_20px_rgba(249,212,35,0.4)]">
-                    <span data-i18n="btn_login_submit">MASUK</span> <i class="fas fa-arrow-right ml-2"></i>
-                </button>
-
-                <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="mt-4 text-xs font-bold text-white/70 hover:text-white underline decoration-dashed underline-offset-4 tracking-wider" data-i18n="txt_no_acc">
-                    Belum punya akun? Daftar di sini
+                <button onclick="submitRegister()" class="w-full py-4 bg-bem-yellow hover:bg-yellow-400 text-bem-dark rounded-xl transition-all font-bold text-lg tracking-widest uppercase z-10 shadow-[0_0_20px_rgba(249,212,35,0.4)]">
+                    <span data-i18n="btn_next">LANJUT</span> <i class="fas fa-arrow-right ml-2"></i>
                 </button>
             </div>
         </div>
@@ -168,7 +154,11 @@
                 <i class="fas fa-play ml-2 group-hover:translate-x-1 transition-transform"></i>
             </button>
             
-            <button onclick="viewLeaderboard()" class="mt-6 text-sm font-bold text-white/70 hover:text-white underline decoration-dashed underline-offset-4 tracking-wider"><i class="fas fa-trophy mr-1 text-bem-yellow"></i> <span data-i18n="btn_view_lb">Lihat Papan Peringkat</span></button>
+            <div class="flex gap-4 mt-6 justify-center">
+                <button onclick="viewLeaderboard()" class="text-xs md:text-sm font-bold text-white/70 hover:text-white transition-colors tracking-wider"><i class="fas fa-trophy mr-1 text-bem-yellow"></i> <span data-i18n="btn_view_lb">Papan Peringkat</span></button>
+                <span class="text-white/30">|</span>
+                <button onclick="gantiPemain()" class="text-xs md:text-sm font-bold text-white/70 hover:text-white transition-colors tracking-wider"><i class="fas fa-user-edit mr-1"></i> <span data-i18n="btn_change_player">Ganti Pemain</span></button>
+            </div>
         </div>
 
         <!-- SCREEN 2: GAMEPLAY -->
@@ -348,7 +338,6 @@
         let currentLevel = 1;
         let streak = 0;
         let wrongStreak = 0;
-        let authMode = 'login';
         
         let lang = localStorage.getItem('preferredLanguage') || 'id';
         let timer;
@@ -358,11 +347,8 @@
         const dict = {
             id: { 
                 nav_title: "Kuis Singapraja", 
-                auth_login_title: "Masuk Akun", auth_login_sub: "Masuk untuk menyimpan skor kamu ke Leaderboard!",
-                auth_reg_title: "Daftar Akun", auth_reg_sub: "Buat akun baru untuk mulai bermain!",
-                txt_no_acc: "Belum punya akun? Daftar di sini", txt_has_acc: "Sudah punya akun? Masuk di sini",
-                btn_login_submit: "MASUK", btn_reg_submit: "DAFTAR", reg_faculty: "FAKULTAS", reg_faculty_ph: "-- Pilih Fakultas --",
-                lobby_title: "Singapraja Kuis", lobby_sub: "Uji wawasanmu tentang kampus tercinta UNSIKA", btn_start: "MULAI MAIN", btn_view_lb: "Lihat Papan Peringkat",
+                reg_title: "Data Pemain", reg_sub: "Masukkan nama dan fakultasmu. Data ini akan tersimpan otomatis!", reg_name: "NAMA PANGGILAN", reg_faculty: "FAKULTAS", reg_faculty_ph: "-- Pilih Fakultas --", btn_next: "LANJUT",
+                lobby_title: "Singapraja Kuis", lobby_sub: "Uji wawasanmu tentang kampus tercinta UNSIKA", btn_start: "MULAI MAIN", btn_view_lb: "Papan Peringkat", btn_change_player: "Ganti Pemain",
                 q_counter: "Soal", 
                 res_title: "HASIL AKHIR", res_score: "Total Skor (Semua Level)", btn_retry: "MAIN LAGI", txt_correct: "BENAR!", txt_wrong: "SALAH!", txt_timeout: "WAKTU HABIS!", txt_saving: "Menyimpan skor...", btn_save_lb: "Lihat Leaderboard",
                 lvl_sub: "Kerja bagus! Persiapkan dirimu untuk tantangan selanjutnya.", lvl_score: "Skor Level Ini", btn_home: "BERANDA", btn_next_lvl: "LANJUT LEVEL",
@@ -370,11 +356,8 @@
             },
             en: { 
                 nav_title: "Singapraja Quiz", 
-                auth_login_title: "Login", auth_login_sub: "Login to save your score to the Leaderboard!",
-                auth_reg_title: "Register", auth_reg_sub: "Create a new account to start playing!",
-                txt_no_acc: "Don't have an account? Register here", txt_has_acc: "Already have an account? Login here",
-                btn_login_submit: "LOGIN", btn_reg_submit: "REGISTER", reg_faculty: "FACULTY", reg_faculty_ph: "-- Select Faculty --",
-                lobby_title: "Archipelago Culture Quiz", lobby_sub: "Test your knowledge about our beloved UNSIKA!", btn_start: "START GAME", btn_view_lb: "View Leaderboard",
+                reg_title: "Player Data", reg_sub: "Enter your name and faculty. This data will be saved automatically!", reg_name: "NICKNAME", reg_faculty: "FACULTY", reg_faculty_ph: "-- Select Faculty --", btn_next: "NEXT",
+                lobby_title: "Archipelago Culture Quiz", lobby_sub: "Test your knowledge about our beloved UNSIKA!", btn_start: "START GAME", btn_view_lb: "Leaderboard", btn_change_player: "Change Player",
                 q_counter: "Question", 
                 res_title: "FINAL RESULTS", res_score: "Total Score (All Levels)", btn_retry: "PLAY AGAIN", txt_correct: "CORRECT!", txt_wrong: "WRONG!", txt_timeout: "TIME'S UP!", txt_saving: "Saving score...", btn_save_lb: "View Leaderboard",
                 lvl_sub: "Great job! Prepare yourself for the next challenge.", lvl_score: "This Level's Score", btn_home: "HOME", btn_next_lvl: "NEXT LEVEL",
@@ -382,17 +365,34 @@
             },
             su: { 
                 nav_title: "Kuis Singapraja", 
-                auth_login_title: "Asup Akun", auth_login_sub: "Asup pikeun nyimpen skor anjeun kana Papan Peringkat!",
-                auth_reg_title: "Daptar Akun", auth_reg_sub: "Jieun akun anyar pikeun mimitian maén!",
-                txt_no_acc: "Teu acan gaduh akun? Daptar di dieu", txt_has_acc: "Tos gaduh akun? Asup di dieu",
-                btn_login_submit: "ASUP", btn_reg_submit: "DAPTAR", reg_faculty: "FAKULTAS", reg_faculty_ph: "-- Pilih Fakultas --",
-                lobby_title: "Singapraja Kuis", lobby_sub: "Uji pangaweruh anjeun ngeunaan kampus UNSIKA!", btn_start: "MIMITIAN MAIN", btn_view_lb: "Tingali Papan Peringkat",
+                reg_title: "Data Pamaén", reg_sub: "Lebetkeun nami sareng fakultas anjeun. Data ieu bakal disimpen otomatis!", reg_name: "NAMI", reg_faculty: "FAKULTAS", reg_faculty_ph: "-- Pilih Fakultas --", btn_next: "TERAS",
+                lobby_title: "Singapraja Kuis", lobby_sub: "Uji pangaweruh anjeun ngeunaan kampus UNSIKA!", btn_start: "MIMITIAN MAIN", btn_view_lb: "Papan Peringkat", btn_change_player: "Ganti Pamaén",
                 q_counter: "Soal", 
                 res_title: "HASIL AHIR", res_score: "Total Skor (Sadaya Level)", btn_retry: "MAÉN DEUI", txt_correct: "LERES!", txt_wrong: "LEPAT!", txt_timeout: "WAKTOS SÉÉP!", txt_saving: "Nyimpen skor...", btn_save_lb: "Tingali Papan Peringkat",
                 lvl_sub: "Saé pisan! Siapkeun diri pikeun tantangan salajengna.", lvl_score: "Skor Level Ieu", btn_home: "BERANDA", btn_next_lvl: "TERAS LEVEL",
                 lb_title: "Papan Peringkat", lb_sub: "Top 10 Pamaén kalayan Skor Pangluhurna!", lb_col_name: "Nami Pamaén", lb_col_fac: "Fakultas", lb_col_score: "Skor", btn_back: "WANGSUL"
             }
         };
+
+        // CEK CACHE SAAT HALAMAN DIBUKA
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedName = localStorage.getItem('singapraja_player_name');
+            const savedFaculty = localStorage.getItem('singapraja_player_faculty');
+            
+            if (savedName && savedFaculty) {
+                playerName = savedName;
+                playerFaculty = savedFaculty;
+                
+                const greet = lang === 'id' ? `Halo, ${playerName}!` : (lang === 'en' ? `Hello, ${playerName}!` : `Sampurasun, ${playerName}!`);
+                document.getElementById('greeting-text').innerText = greet;
+                
+                // Langsung ke lobby jika data ada
+                switchScreen('screen-lobby');
+            } else {
+                // Munculkan registrasi jika memori kosong
+                switchScreen('screen-register');
+            }
+        });
 
         function changeTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
@@ -409,12 +409,7 @@
             document.getElementById('lang-display').innerText = lang.toUpperCase();
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (dict[lang][key]) el.innerHTML = dict[lang][key];
-                
-                // update icon logic
-                if(key === 'btn_login_submit' || key === 'btn_reg_submit') {
-                    el.innerHTML += ' <i class="fas fa-arrow-right ml-2"></i>';
-                }
+                if (dict[lang][key]) el.innerText = dict[lang][key];
             });
             if(document.getElementById('screen-game').classList.contains('active')) {
                 document.getElementById('question-text').innerText = quizData[currentIdx].q[lang];
@@ -438,96 +433,42 @@
             }
         }
 
-        // FUNGSI VISIBILITAS PASSWORD
-        function togglePasswordVisibility() {
-            const pwdInput = document.getElementById('auth-password');
-            const eyeIcon = document.getElementById('eye-icon');
-            if (pwdInput.type === 'password') {
-                pwdInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
-            } else {
-                pwdInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-            }
-        }
-
-        // FUNGSI AUTH (LOGIN / REGISTER)
-        function toggleAuthMode() {
-            authMode = authMode === 'login' ? 'register' : 'login';
-            document.getElementById('auth-error').classList.add('hidden');
+        function submitRegister() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            const facInput = document.getElementById('player-faculty').value;
+            const errEl = document.getElementById('reg-error');
             
-            if(authMode === 'register') {
-                document.getElementById('auth-title').setAttribute('data-i18n', 'auth_reg_title');
-                document.getElementById('auth-subtitle').setAttribute('data-i18n', 'auth_reg_sub');
-                document.getElementById('faculty-container').style.display = 'block';
-                document.getElementById('auth-btn').querySelector('span').setAttribute('data-i18n', 'btn_reg_submit');
-                document.getElementById('auth-toggle-btn').setAttribute('data-i18n', 'txt_has_acc');
-            } else {
-                document.getElementById('auth-title').setAttribute('data-i18n', 'auth_login_title');
-                document.getElementById('auth-subtitle').setAttribute('data-i18n', 'auth_login_sub');
-                document.getElementById('faculty-container').style.display = 'none';
-                document.getElementById('auth-btn').querySelector('span').setAttribute('data-i18n', 'btn_login_submit');
-                document.getElementById('auth-toggle-btn').setAttribute('data-i18n', 'txt_no_acc');
+            if(nameInput === "" || facInput === "") {
+                errEl.innerText = lang === 'id' ? "⚠️ Mohon isi Nama dan pilih Fakultasmu dulu ya!" : (lang === 'en' ? "⚠️ Please fill in your Name and select your Faculty!" : "⚠️ Punten, eusian Nami sareng pilih Fakultas heula!");
+                errEl.classList.remove('hidden');
+                return;
             }
-            changeLang(lang); // refresh text
+            errEl.classList.add('hidden');
+            
+            playerName = nameInput;
+            playerFaculty = facInput;
+            
+            // Simpan ke Cache / Local Storage
+            localStorage.setItem('singapraja_player_name', playerName);
+            localStorage.setItem('singapraja_player_faculty', playerFaculty);
+            
+            const greet = lang === 'id' ? `Halo, ${playerName}!` : (lang === 'en' ? `Hello, ${playerName}!` : `Sampurasun, ${playerName}!`);
+            document.getElementById('greeting-text').innerText = greet;
+            
+            switchScreen('screen-lobby');
         }
 
-        function showAuthError(msg, isSuccess = false) {
-            const errEl = document.getElementById('auth-error');
-            errEl.innerText = msg;
-            errEl.classList.remove('hidden', 'bg-red-600/50', 'bg-green-600/50');
-            errEl.classList.add(isSuccess ? 'bg-green-600/50' : 'bg-red-600/50');
-        }
-
-        function processAuth() {
-            const usernameInput = document.getElementById('auth-username').value.trim();
-            const passwordInput = document.getElementById('auth-password').value.trim();
-            const facInput = document.getElementById('auth-faculty').value;
-            const btn = document.getElementById('auth-btn');
-
-            if(usernameInput === "" || passwordInput === "") {
-                showAuthError("⚠️ Mohon isi Username dan Password!"); return;
-            }
-            if(authMode === 'register' && !facInput) {
-                showAuthError("⚠️ Mohon pilih Fakultasmu!"); return;
-            }
-
-            document.getElementById('auth-error').classList.add('hidden');
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Tunggu...';
-            btn.classList.add('opacity-70', 'pointer-events-none');
-
-            // Kita pakai metode GET agar tidak diblokir oleh CORS Google Apps Script
-            const queryParams = `?action=${authMode}&username=${encodeURIComponent(usernameInput)}&password=${encodeURIComponent(passwordInput)}&faculty=${encodeURIComponent(facInput || '')}`;
-
-            fetch(SCRIPT_URL + queryParams)
-            .then(res => res.json())
-            .then(data => {
-                btn.classList.remove('opacity-70', 'pointer-events-none');
-                
-                if (data.status === 'success') {
-                    if (authMode === 'register') {
-                        showAuthError("✅ Registrasi berhasil! Silakan Masuk.", true);
-                        document.getElementById('auth-password').value = ""; // clear password
-                        toggleAuthMode(); // Alihkan ke mode login secara instan
-                    } else { // Jika berhasil login
-                        playerName = usernameInput;
-                        playerFaculty = data.faculty; // ambil fakultas dari database
-                        const greet = lang === 'id' ? `Halo, ${playerName}!` : (lang === 'en' ? `Hello, ${playerName}!` : `Sampurasun, ${playerName}!`);
-                        document.getElementById('greeting-text').innerText = greet;
-                        switchScreen('screen-lobby');
-                    }
-                } else {
-                    showAuthError("⚠️ " + data.message);
-                    changeLang(lang); // reset button text
-                }
-            })
-            .catch(err => {
-                btn.classList.remove('opacity-70', 'pointer-events-none');
-                showAuthError("⚠️ Gagal terhubung ke server. Coba lagi.");
-                changeLang(lang);
-            });
+        function gantiPemain() {
+            // Hapus cache memori
+            localStorage.removeItem('singapraja_player_name');
+            localStorage.removeItem('singapraja_player_faculty');
+            
+            // Kosongkan form input
+            document.getElementById('player-name').value = "";
+            document.getElementById('player-faculty').value = "";
+            
+            // Kembali ke layar registrasi
+            switchScreen('screen-register');
         }
 
         function startQuiz() {
@@ -727,7 +668,7 @@
         function saveAndShowLeaderboard() {
             document.getElementById('saving-state').classList.remove('hidden');
             
-            // Simpan skor ke sheet Leaderboard menggunakan POST dengan mode no-cors
+            // Simpan skor ke sheet Leaderboard
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
