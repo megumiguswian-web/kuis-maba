@@ -69,7 +69,8 @@
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <i class="fas fa-graduation-cap text-2xl md:text-3xl text-bem-yellow drop-shadow-md"></i>
-                <h1 class="font-display text-lg md:text-xl tracking-wide hidden md:block text-glow" data-i18n="nav_title">Kuis Singapraja</h1>
+                <!-- Bagian yang diperbaiki: class 'hidden md:block' dihapus dan diubah ukurannya -->
+                <h1 class="font-display text-base md:text-xl tracking-wide text-glow" data-i18n="nav_title">Kuis Singapraja</h1>
             </div>
             <div class="flex gap-2">
                 <div class="relative group">
@@ -668,7 +669,7 @@
         function saveAndShowLeaderboard() {
             document.getElementById('saving-state').classList.remove('hidden');
             
-            // Simpan skor ke sheet Leaderboard
+            // Simpan skor ke sheet Leaderboard menggunakan POST dengan mode no-cors
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
